@@ -9,7 +9,7 @@ export default function Layout() {
             <BG />
             <NavBar></NavBar>
 
-            <main className="mt-24 md:mt-0 px-4">
+            <main className="mt-20 md:mt-10 px-4">
                 <Outlet />
             </main>
 

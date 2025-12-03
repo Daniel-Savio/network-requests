@@ -1,0 +1,190 @@
+{
+    "ied": [
+        {
+            "nome": "BM",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "Entrada Digital do gateway",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "TM1/TM2",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "TS",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "LAD",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "LAP",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "AVR",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "GMP-1",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "GMP-2",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "GMPs-2",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "MO",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "SPS",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "DM1",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "DM2",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "IDM",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "AVR_V2",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "TM",
+            "fabricante": "Treetech"
+        },
+        {
+            "nome": "MOS",
+            "fabricante": "Treetech"
+        }
+    ],
+    "ied_terceiros": [
+        {
+            "nome": "MasterTemp",
+            "fabricante": "Electron"
+        },
+        {
+            "nome": "Calisto",
+            "fabricante": "Doble"
+        },
+        {
+            "nome": "T-Guard",
+            "fabricante": "Qualitrol"
+        },
+        {
+            "nome": "TM1",
+            "fabricante": "Qualitrol"
+        },
+        {
+            "nome": "T301",
+            "fabricante": "Rugged"
+        },
+        {
+            "nome": "STB000",
+            "fabricante": "Qualitrol"
+        },
+        {
+            "nome": "Kelman DGA900",
+            "fabricante": "GE"
+        },
+        {
+            "nome": "Montrano",
+            "fabricante": "Omicron"
+        },
+        {
+            "nome": "SEL2414",
+            "fabricante": "SEL"
+        },
+        {
+            "nome": "SEL2440",
+            "fabricante": "SEL"
+        },
+        {
+            "nome": "SEL487",
+            "fabricante": "SEL"
+        },
+        {
+            "nome": "SDB",
+            "fabricante": "Johnson&Johnson"
+        },
+        {
+            "nome": "VAMP 321",
+            "fabricante": "Schneider"
+        },
+        {
+            "nome": "DPT145",
+            "fabricante": "Vaisala"
+        },
+        {
+            "nome": "8775",
+            "fabricante": "Trafag"
+        },
+        {
+            "nome": "BM HVDC",
+            "fabricante": "Radice"
+        },
+        {
+            "nome": "MFC-300T",
+            "fabricante": "Licht"
+        },
+        {
+            "nome": "CoreSense",
+            "fabricante": "ABB"
+        },
+        {
+            "nome": "MIT",
+            "fabricante": "ABB"
+        },
+        {
+            "nome": "OPT100",
+            "fabricante": "Vaisala"
+        },
+        {
+            "nome": "BMT330",
+            "fabricante": "GE"
+        },
+        {
+            "nome": "Zyggot-Arc",
+            "fabricante": "Varixx"
+        },
+        {
+            "nome": "Zyggot-Temp",
+            "fabricante": "Varixx"
+        },
+        {
+            "nome": "Secador - DB200D",
+            "fabricante": "Messko"
+        },
+        {
+            "nome": "SecadOr - DB200G",
+            "fabricante": "Messko"
+        },
+        {
+            "nome": "Simotemp",
+            "fabricante": "Siemens"
+        },
+        {
+            "nome": "MultiSense",
+            "fabricante": "Siemens"
+        },
+        {
+            "nome": "Outro IED",
+            "fabricante": "Terceiro"
+        }
+    ]
+}

@@ -1,0 +1,109 @@
+{
+    "requester": [
+        {
+            "name": "Gilberto Amorim",
+            "email": "gilberto.amorim@treetech.com.br",
+            "departament": "Comercial"
+        },
+        {
+            "name": "Rodrigo Silva",
+            "email": "rodrigo.silva@treetech.com.br",
+            "departament": "Comercial"
+        },
+        {
+            "name": "Márcio Costa",
+            "email": "marcio.costa@treetech.com.br",
+            "departament": "Comercial"
+        },
+        {
+            "name": "Lucas Frítoli",
+            "email": "lucas.fritoli@treetech.com.br",
+            "departament": "SAM"
+        },
+        {
+            "name": "Vinícius Santos",
+            "email": "vinicius.santos@treetech.com.br",
+            "departament": "Comercial"
+        },
+        {
+            "name": "Carlos Bezerra",
+            "email": "carlos.bezerra@treetech.com.br",
+            "departament": "Comercial"
+        },
+        {
+            "name": "Daniela Novaes",
+            "email": "daniela.novaes@treetech.com.br",
+            "departament": "Processamento"
+        },
+        {
+            "name": "Roque Barone",
+            "email": "roque.barone@treetech.com.br",
+            "departament": "Processamento"
+        },
+        {
+            "name": "Julio Marques",
+            "email": "julio.marques@treetech.com.br",
+            "departament": "Pós Vendas"
+        },
+        {
+            "name": "Nathalia Cunha",
+            "email": "nathalia.cunha@treetech.com.br",
+            "departament": "Pós Vendas"
+        },
+        {
+            "name": "João Verona",
+            "email": "joao.verona@treetech.com.br",
+            "departament": "Pós Vendas"
+        },
+        {
+            "name": "Debora Luciano",
+            "email": "debora.luciano@treetech.com.br",
+            "departament": "Pós Vendas"
+        },
+        {
+            "name": "Diego Rodrigues",
+            "email": "diego.rodrigues@treetech.com.br",
+            "departament": "Implantação"
+        },
+        {
+            "name": "Renan Ferreira",
+            "email": "renan.ferreira@treetech.com.br",
+            "departament": "SAM"
+        },
+        {
+            "name": "Rafael Fehlberg",
+            "email": "rafael.fehlberg@treetech.com.br",
+            "departament": "SAM"
+        },
+        {
+            "name": "Hugo Wemer",
+            "email": "hugo.silva@treetech.com.br",
+            "departament": "SAM"
+        },
+        {
+            "name": "Rodrigo Moreira",
+            "email": "rodrigo.moreira@treetech.com.br",
+            "departament": "SAM"
+        }
+    ],
+    "sd": [
+        "SDG",
+        "SD+"
+    ],
+    "entradas": [
+        "TCP/IP",
+        "71-72",
+        "74-75",
+        "71-72-73"
+    ],
+    "protocolos_entrada": [
+        "Modbus",
+        "DNP3"
+    ],
+    "protocolos_saida": [
+        "Modbus",
+        "DNP3",
+        "IEC61850",
+        "AMQP"
+    ]
+}

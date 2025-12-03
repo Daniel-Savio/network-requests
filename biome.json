@@ -18,6 +18,9 @@
 			},
 			"correctness": {
 				"noEmptyPattern": "off"
+			},
+			"suspicious": {
+				"noArrayIndexKey": "info"
 			}
 		}
 	},
