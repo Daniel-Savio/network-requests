@@ -41,14 +41,8 @@ export const requestFormSchema = z.object({
         .string('Insira um nome válido e envie novamente')
         .min(3, 'Insira um nome válido')
         .nonempty('Campo obrigatório'),
-    email: z
-        .string('Insira um e-mail válido e envie novamente')
-        .email('Insira um e-mail válido')
-        .nonempty('Campo obrigatório'),
-    departament: z
-        .string('Insira um departamento válido e envie novamente')
-        .min(3, 'Insira um departamento válido')
-        .nonempty('Campo obrigatório'),
+    email: z.string().optional(),
+    departament: z.string().optional(),
     isEqual: z.boolean('Escolha uma opção e envie novamente').optional(),
     client: z.string().min(3, 'Insira um nome válido'),
     project: z.string().min(3, 'Insira um nome válido'),
