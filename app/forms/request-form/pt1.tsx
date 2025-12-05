@@ -50,6 +50,11 @@ export default function Pt1({ isHidden, next, prev }: Props) {
     data.departament = info.requester.find(item => item.name === requester)?.departament || ""
     setFormData(data)
     console.log(formData)
+    if (next) {
+      const virtualButton = document.createElement('button');
+      virtualButton.onclick = next;
+      virtualButton.click();
+    }
    
   }
 
@@ -217,7 +222,7 @@ export default function Pt1({ isHidden, next, prev }: Props) {
         
         <footer className="flex gap-1 justify-between mt-5">
           <Button className="invisible"></Button>
-          {next ? <Button type="submit" onClick={next} ><ChevronRight /></Button> : <Button className="invisible"></Button>}
+          {next ? <Button type="submit"><ChevronRight /></Button> : <Button className="invisible"></Button>}
         </footer>
       </form>
 
