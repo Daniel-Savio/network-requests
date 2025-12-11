@@ -9,7 +9,7 @@ import { useState } from "react"
 
 
 export default function Request() {
-    const [formStep, setFormStep] = useState(0)
+    const [formStep, setFormStep] = useState(1)
 
 
     return (

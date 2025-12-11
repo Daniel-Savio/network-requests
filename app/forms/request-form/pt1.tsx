@@ -44,6 +44,7 @@ export default function Pt1({ isHidden, next, prev }: Props) {
     resolver: zodResolver(generalInfoSchema),
     defaultValues: {
       gateway: useRequestStore.getState().gateway || "SDG",
+      sigmaConnection: useRequestStore.getState().sigmaConnection || "Sem comunicação",
       requester: useRequestStore.getState().requester || "",
       email: useRequestStore.getState().email || "",
       departament: useRequestStore.getState().departament || "",
@@ -51,8 +52,6 @@ export default function Pt1({ isHidden, next, prev }: Props) {
       project: useRequestStore.getState().project || "",
       invoiceNumber: useRequestStore.getState().invoiceNumber || "",
       clientNumber: useRequestStore.getState().clientNumber || "",
-      sigmaConnection: useRequestStore.getState().sigmaConnection || "Sem comunicação",
-
     }
   })
 
@@ -63,11 +62,11 @@ export default function Pt1({ isHidden, next, prev }: Props) {
     storeData(data)
     console.log(useRequestStore.getState())
 
-    // if (next) {
-    //   const virtualButton = document.createElement('button');
-    //   virtualButton.onclick = next;
-    //   virtualButton.click();
-    // }
+    if (next) {
+      const virtualButton = document.createElement('button');
+      virtualButton.onclick = next;
+      virtualButton.click();
+    }
 
   }
 
@@ -181,7 +180,7 @@ export default function Pt1({ isHidden, next, prev }: Props) {
             <InputGroup className="flex gap-2 mt-5">
               <Select onValueChange={field.onChange} value={field.value}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecione um requerente" />
+                  <SelectValue placeholder="Selecione um IED" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
