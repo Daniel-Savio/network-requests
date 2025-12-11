@@ -70,23 +70,25 @@ export const IedArray = ({ nestIndex, control, setValue }: { nestIndex: number, 
 
 
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full">
                         <Controller
                             name={`entradas.${nestIndex}.ieds.${k}.address`}
                             control={control}
-                            render={({ field }) => <InputGroup className="w-full"><InputGroupInput className="w-full" type="number" placeholder="Endereço" {...field} /></InputGroup>}
+                            render={({ field }) => <InputGroup className="w-full"><InputGroupInput className="w-full" type="number" placeholder="Endereço" {...field} value={field.value || ''} /></InputGroup>}
                         />
-                        <Controller
-                            name={`entradas.${nestIndex}.ieds.${k}.modules`}
-                            control={control}
-                            render={({ field }) => <InputGroup className="w-full"><InputGroupInput className="w-full" type="number" placeholder="Módulos" {...field} /></InputGroup>}
-                        />
+                        {(control._formValues.entradas[nestIndex].ieds[k].name === "BM" ||
+                            control._formValues.entradas[nestIndex].ieds[k].name === "COMM4") && (
+                                <Controller
+                                    name={`entradas.${nestIndex}.ieds.${k}.modules`}
+                                    control={control}
+                                    render={({ field }) => <InputGroup className="w-full"><InputGroupInput className="w-full" type="number" placeholder="Módulos ou SPS" {...field} /></InputGroup>}
+                                />)}
                     </div>
                     <div>
                         <Controller
                             name={`entradas.${nestIndex}.ieds.${k}.optional`}
                             control={control}
-                            render={({ field }) => <InputGroupInput placeholder="Opcional" {...field} />}
+                            render={({ field }) => <InputGroupInput placeholder="Opcional" {...field} value={field.value || ''} />}
                         />
                     </div>
                 </motion.div>
