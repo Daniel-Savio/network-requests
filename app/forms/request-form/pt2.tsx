@@ -10,6 +10,8 @@ import info from "@/lib/request-info.json"
 import { SiHandshakeProtocol } from "react-icons/si";
 import InputError from "@/components/error"
 import { AnimatePresence, motion } from "motion/react"
+import { IedArray } from "./ieds"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 interface Props {
     isHidden: boolean
     next?: () => void
@@ -21,7 +23,19 @@ const inputInfoSchema = requestFormSchema.pick({ // TODO: Fix this schema
 
 type InputInfo = z.infer<typeof inputInfoSchema>
 
+
 const restrictedValues = ["71-72", "74-75", "71-72-73"];
+
+const bouncingUpAnimation = {
+    initial: { y: 10, opacity: 0 },
+    whileInView: { y: 0, opacity: 1 },
+    transition: {
+        duration: 0.3,
+        delay: 0.3,
+        type: "spring" as const,
+        stiffness: 200
+    }
+}
 
 export default function Pt2({ isHidden, next, prev }: Props) {
 
@@ -52,326 +66,348 @@ export default function Pt2({ isHidden, next, prev }: Props) {
 
     return (
         <div className="p-2 gap-2" style={isHidden ? { display: "none" } : {}}>
-            <h1 className="text-lg font-bold">Entradas</h1>
-
             <form onSubmit={form.handleSubmit(saveFormData)}>
+
+                <h1 className="text-lg font-bold">Entradas</h1>
+
                 {fields.map((currentField, index) => (
                     <AnimatePresence key={index}>
+                        <Tabs defaultValue="def">
 
-                        <motion.div animate={{ x: 0, opacity: 1 }} initial={{ x: 30, opacity: 0 }} transition={{
-                            duration: 0.3,
-                            delay: 0.1,
-                            type: "spring" as const,
-                            stiffness: 500
-                        }} key={currentField.id} className="flex flex-col gap-2 border p-2 rounded-md mt-4">
-                            <div className="flex justify-between items-center mb-2 border-b-2 pb-1">
-                                <div className="flex gap-2 items-center">
-                                    <Cable className="size-4" />
-                                    <h2 className="font-semibold"> {index + 1}° Entrada </h2>
+                            <motion.div
+                                animate={{ x: 0, opacity: 1 }}
+                                initial={{ x: 30, opacity: 0 }}
+                                transition={{
+                                    duration: 0.3,
+                                    delay: 0.1,
+                                    type: "spring" as const,
+                                    stiffness: 500
+                                }} key={currentField.id}
+                                className="flex flex-col gap-2 border p-2 rounded-md mt-4"
+                            >
+
+
+                                <div className="flex justify-between items-center mb-2 border-b-2 pb-1">
+                                    <div className="flex gap-2 items-center">
+                                        <Cable className="size-4" />
+                                        <h2 className="font-semibold"> {index + 1}° Entrada </h2>
+                                    </div>
+                                    <Button variant={"destructive"} className="" onClick={() => remove(index)}>
+                                        <p className="text-sm">Remover</p>
+                                        <X className="size-4" />
+                                    </Button>
                                 </div>
-                                <Button variant={"destructive"} className="" onClick={() => remove(index)}>
-                                    <p className="text-sm">Remover</p>
-                                    <X className="size-4" />
-                                </Button>
-                            </div>
 
-                            {/* Protocolo */}
-                            <div>
-                                <Controller
-                                    name={`entradas.${index}.protocolo`}
-                                    control={control}
-                                    rules={{ required: "Campo obrigatório" }}
-                                    render={({ field }) => (
+                                <TabsContent value="def">
+                                    {/* Protocolo */}
+                                    <motion.div initial={bouncingUpAnimation.initial} transition={bouncingUpAnimation.transition} whileInView={bouncingUpAnimation.whileInView}>
+                                        <Controller
+                                            name={`entradas.${index}.protocolo`}
+                                            control={control}
+                                            rules={{ required: "Campo obrigatório" }}
+                                            render={({ field }) => (
+                                                <>
+                                                    <InputGroup>
+                                                        <Select onValueChange={field.onChange} value={field.value}>
+                                                            <SelectTrigger className="w-full">
+                                                                <SelectValue placeholder="Selecione um protocolo" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectGroup>
+                                                                    <SelectLabel>Protocolos</SelectLabel>
+                                                                    {
+                                                                        info.protocolos_entrada.sort((a, b) => a.localeCompare(b)).map((item, index) => {
+                                                                            return (
+                                                                                <SelectItem key={index} value={item}>
+                                                                                    {item}
+                                                                                </SelectItem>
+                                                                            )
+                                                                        })
+                                                                    }
+                                                                </SelectGroup>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <InputGroupAddon>
+                                                            <SiHandshakeProtocol />
+                                                        </InputGroupAddon>
+                                                    </InputGroup>
+                                                    {errors.entradas?.[index]?.protocolo && (
+                                                        <InputError message={errors.entradas?.[index]?.protocolo?.message} />
+                                                    )}
+                                                </>
+                                            )} />
+                                    </motion.div>
+                                    {/* Conexão */}
+                                    <motion.div initial={bouncingUpAnimation.initial} transition={{ ...bouncingUpAnimation.transition, delay: 0.4 }} whileInView={bouncingUpAnimation.whileInView} className="mb-5">
+                                        <Controller
+                                            name={`entradas.${index}.type`}
+                                            control={control}
+                                            rules={{ required: "Campo obrigatório" }}
+                                            render={({ field }) => {
+                                                const otherSelectedValues = watchedEntradas?.filter((_, i) => i !== index).map(e => e.type) ?? [];
+                                                const filteredOptions = info.entradas.filter(option => {
+                                                    if (restrictedValues.includes(option)) {
+                                                        return !otherSelectedValues.includes(option);
+                                                    }
+                                                    return true;
+                                                })
+
+                                                return (
+                                                    <>
+                                                        <InputGroup>
+                                                            <Select onValueChange={field.onChange} value={field.value}>
+                                                                <SelectTrigger className="w-full">
+                                                                    <SelectValue placeholder="Selecione uma conexão" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectGroup>
+                                                                        <SelectLabel>Opções de entrada</SelectLabel>
+                                                                        {
+                                                                            field.value && !filteredOptions.includes(field.value) && (
+                                                                                <SelectItem value={field.value}>
+                                                                                    {field.value}
+                                                                                </SelectItem>
+                                                                            )
+                                                                        }
+                                                                        {
+                                                                            filteredOptions.sort((a, b) => a.localeCompare(b)).map((item, index) => {
+                                                                                return (
+                                                                                    <SelectItem key={index} value={item}>
+                                                                                        {item}
+                                                                                    </SelectItem>
+                                                                                )
+                                                                            })
+                                                                        }
+                                                                    </SelectGroup>
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <InputGroupAddon>
+                                                                <SiHandshakeProtocol />
+                                                            </InputGroupAddon>
+                                                        </InputGroup>
+                                                        {errors.entradas?.[index]?.type && (
+                                                            <InputError message={errors.entradas?.[index]?.type?.message} />
+                                                        )}
+                                                    </>
+                                                )
+                                            }} />
+
+                                    </motion.div>
+
+                                    {form.watch(`entradas.${index}.type`) === "TCP/IP" ? (
                                         <>
-                                            <InputGroup>
-                                                <Select onValueChange={field.onChange} value={field.value}>
-                                                    <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Selecione um protocolo" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectGroup>
-                                                            <SelectLabel>Protocolos</SelectLabel>
-                                                            {
-                                                                info.protocolos_entrada.sort((a, b) => a.localeCompare(b)).map((item, index) => {
-                                                                    return (
-                                                                        <SelectItem key={index} value={item}>
-                                                                            {item}
-                                                                        </SelectItem>
-                                                                    )
-                                                                })
-                                                            }
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
-                                                <InputGroupAddon>
-                                                    <SiHandshakeProtocol />
-                                                </InputGroupAddon>
-                                            </InputGroup>
-                                            {errors.entradas?.[index]?.protocolo && (
-                                                <InputError message={errors.entradas?.[index]?.protocolo?.message} />
-                                            )}
+                                            {/* IP */}
+                                            <motion.div initial={bouncingUpAnimation.initial} whileInView={bouncingUpAnimation.whileInView} transition={{ ...bouncingUpAnimation.transition, delay: 0.3 }}>
+                                                <Controller
+                                                    name={`entradas.${index}.ip`}
+                                                    control={control}
+                                                    rules={{ required: "Campo obrigatório" }}
+                                                    render={({ field }) => (
+                                                        <>
+                                                            <InputGroup>
+                                                                <InputGroupInput placeholder="Endereço IP" {...field} />
+                                                                <InputGroupAddon>
+                                                                    <EthernetPort />
+                                                                </InputGroupAddon>
+                                                            </InputGroup>
+                                                            {errors.entradas?.[index]?.ip && (
+                                                                <InputError message={errors.entradas?.[index]?.ip?.message} />
+                                                            )}
+                                                        </>
+                                                    )}
+                                                />
+                                            </motion.div>
+                                            {/* Port */}
+                                            <motion.div initial={bouncingUpAnimation.initial} whileInView={bouncingUpAnimation.whileInView} transition={{ ...bouncingUpAnimation.transition, delay: 0.4 }} className="mb-5">
+                                                <Controller
+                                                    name={`entradas.${index}.port`}
+                                                    control={control}
+                                                    rules={{ required: "Campo obrigatório" }}
+                                                    render={({ field }) => (
+                                                        <>
+                                                            <InputGroup>
+                                                                <InputGroupInput placeholder="Porta" {...field} />
+                                                                <InputGroupAddon>
+                                                                    <EthernetPort />
+                                                                </InputGroupAddon>
+                                                            </InputGroup>
+                                                            {errors.entradas?.[index]?.port && (
+                                                                <InputError message={errors.entradas?.[index]?.port?.message} />
+                                                            )}
+                                                        </>
+                                                    )}
+                                                />
+                                            </motion.div>
                                         </>
-                                    )} />
-                            </div>
-                            {/* Conexão */}
-                            <div className="mb-5">
-                                <Controller
-                                    name={`entradas.${index}.type`}
-                                    control={control}
-                                    rules={{ required: "Campo obrigatório" }}
-                                    render={({ field }) => {
-                                        const otherSelectedValues = watchedEntradas?.filter((_, i) => i !== index).map(e => e.type) ?? [];
-                                        const filteredOptions = info.entradas.filter(option => {
-                                            if (restrictedValues.includes(option)) {
-                                                return !otherSelectedValues.includes(option);
-                                            }
-                                            return true;
-                                        })
+                                    ) : (
+                                        <>
+                                            {/* Baudrate */}
+                                            <motion.div initial={bouncingUpAnimation.initial} whileInView={bouncingUpAnimation.whileInView} transition={{ ...bouncingUpAnimation.transition, delay: 0.3 }}>
+                                                <Controller
+                                                    name={`entradas.${index}.baudRate`}
+                                                    control={control}
+                                                    rules={{ required: "Campo obrigatório" }}
+                                                    render={({ field }) => (
+                                                        <>
+                                                            <InputGroup>
+                                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                                    <SelectTrigger className="w-full">
+                                                                        <SelectValue placeholder="Selecione um valor" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent>
+                                                                        <SelectGroup>
+                                                                            <SelectLabel>Velocidades</SelectLabel>
 
-                                        return (
-                                            <>
-                                                <InputGroup>
-                                                    <Select onValueChange={field.onChange} value={field.value}>
-                                                        <SelectTrigger className="w-full">
-                                                            <SelectValue placeholder="Selecione uma conexão" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectGroup>
-                                                                <SelectLabel>Opções de entrada</SelectLabel>
-                                                                {
-                                                                    field.value && !filteredOptions.includes(field.value) && (
-                                                                        <SelectItem value={field.value}>
-                                                                            {field.value}
-                                                                        </SelectItem>
-                                                                    )
-                                                                }
-                                                                {
-                                                                    filteredOptions.sort((a, b) => a.localeCompare(b)).map((item, index) => {
-                                                                        return (
-                                                                            <SelectItem key={index} value={item}>
-                                                                                {item}
-                                                                            </SelectItem>
-                                                                        )
-                                                                    })
-                                                                }
-                                                            </SelectGroup>
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <InputGroupAddon>
-                                                        <SiHandshakeProtocol />
-                                                    </InputGroupAddon>
-                                                </InputGroup>
-                                                {errors.entradas?.[index]?.type && (
-                                                    <InputError message={errors.entradas?.[index]?.type?.message} />
-                                                )}
-                                            </>
-                                        )
-                                    }} />
+                                                                            <SelectItem value={"9600"}>9600</SelectItem>
+                                                                            <SelectItem value={"115200"}>115200</SelectItem>
+                                                                            <SelectItem value={"4800"}>4800</SelectItem>
+                                                                            <SelectItem value={"14400"}>4800</SelectItem>
+                                                                            <SelectItem value={"19200"}>19200</SelectItem>
+                                                                            <SelectItem value={"28800"}>28800</SelectItem>
 
-                            </div>
-
-                            {form.watch(`entradas.${index}.type`) === "TCP/IP" ? (
-                                <>
-                                    {/* IP */}
-                                    <div>
-                                        <Controller
-                                            name={`entradas.${index}.ip`}
-                                            control={control}
-                                            rules={{ required: "Campo obrigatório" }}
-                                            render={({ field }) => (
-                                                <>
-                                                    <InputGroup>
-                                                        <InputGroupInput placeholder="Endereço IP" {...field} />
-                                                        <InputGroupAddon>
-                                                            <EthernetPort />
-                                                        </InputGroupAddon>
-                                                    </InputGroup>
-                                                    {errors.entradas?.[index]?.ip && (
-                                                        <InputError message={errors.entradas?.[index]?.ip?.message} />
+                                                                        </SelectGroup>
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                <InputGroupAddon className="px-2">
+                                                                    <Cable />
+                                                                    BaudRate
+                                                                </InputGroupAddon>
+                                                            </InputGroup>
+                                                            {errors.entradas?.[index]?.baudRate && (
+                                                                <InputError message={errors.entradas?.[index]?.baudRate?.message} />
+                                                            )}
+                                                        </>
                                                     )}
-                                                </>
-                                            )}
-                                        />
-                                    </div>
-                                    {/* Port */}
-                                    <div className="mb-5">
-                                        <Controller
-                                            name={`entradas.${index}.port`}
-                                            control={control}
-                                            rules={{ required: "Campo obrigatório" }}
-                                            render={({ field }) => (
-                                                <>
-                                                    <InputGroup>
-                                                        <InputGroupInput placeholder="Porta" {...field} />
-                                                        <InputGroupAddon>
-                                                            <EthernetPort />
-                                                        </InputGroupAddon>
-                                                    </InputGroup>
-                                                    {errors.entradas?.[index]?.port && (
-                                                        <InputError message={errors.entradas?.[index]?.port?.message} />
+                                                />
+                                            </motion.div>
+                                            {/* Databits */}
+                                            <motion.div initial={bouncingUpAnimation.initial} whileInView={bouncingUpAnimation.whileInView} transition={{ ...bouncingUpAnimation.transition, delay: 0.4 }}>
+                                                <Controller
+                                                    name={`entradas.${index}.dataBits`}
+                                                    control={control}
+                                                    rules={{ required: "Campo obrigatório" }}
+                                                    render={({ field }) => (
+                                                        <>
+                                                            <InputGroup>
+                                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                                    <SelectTrigger className="w-full">
+                                                                        <SelectValue placeholder="Selecione um valor" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent>
+                                                                        <SelectGroup>
+                                                                            <SelectLabel>Valores</SelectLabel>
+                                                                            <SelectItem value={"8"}>8</SelectItem>
+                                                                            <SelectItem value={"7"}>7</SelectItem>
+                                                                        </SelectGroup>
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                <InputGroupAddon className="px-2">
+                                                                    <Cable />
+                                                                    DataBits
+                                                                </InputGroupAddon>
+                                                            </InputGroup>
+                                                            {errors.entradas?.[index]?.dataBits && (
+                                                                <InputError message={errors.entradas?.[index]?.dataBits?.message} />
+                                                            )}
+                                                        </>
                                                     )}
-                                                </>
-                                            )}
-                                        />
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    {/* Baudrate */}
-                                    <div>
-                                        <Controller
-                                            name={`entradas.${index}.baudRate`}
-                                            control={control}
-                                            rules={{ required: "Campo obrigatório" }}
-                                            render={({ field }) => (
-                                                <>
-                                                    <InputGroup>
-                                                        <Select onValueChange={field.onChange} value={field.value}>
-                                                            <SelectTrigger className="w-full">
-                                                                <SelectValue placeholder="Selecione um valor" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectGroup>
-                                                                    <SelectLabel>Velocidades</SelectLabel>
+                                                />
+                                            </motion.div>
 
-                                                                    <SelectItem value={"9600"}>9600</SelectItem>
-                                                                    <SelectItem value={"115200"}>115200</SelectItem>
-                                                                    <SelectItem value={"4800"}>4800</SelectItem>
-                                                                    <SelectItem value={"14400"}>4800</SelectItem>
-                                                                    <SelectItem value={"19200"}>19200</SelectItem>
-                                                                    <SelectItem value={"28800"}>28800</SelectItem>
-
-                                                                </SelectGroup>
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <InputGroupAddon className="px-2">
-                                                            <Cable />
-                                                            BaudRate
-                                                        </InputGroupAddon>
-                                                    </InputGroup>
-                                                    {errors.entradas?.[index]?.baudRate && (
-                                                        <InputError message={errors.entradas?.[index]?.baudRate?.message} />
+                                            {/* parity */}
+                                            <motion.div initial={bouncingUpAnimation.initial} whileInView={bouncingUpAnimation.whileInView} transition={{ ...bouncingUpAnimation.transition, delay: 0.5 }}>
+                                                <Controller
+                                                    name={`entradas.${index}.parity`}
+                                                    control={control}
+                                                    rules={{ required: "Campo obrigatório" }}
+                                                    render={({ field }) => (
+                                                        <>
+                                                            <InputGroup>
+                                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                                    <SelectTrigger className="w-full">
+                                                                        <SelectValue placeholder="Selecione um valor" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent>
+                                                                        <SelectGroup>
+                                                                            <SelectLabel>Valores</SelectLabel>
+                                                                            <SelectItem value={"None"}>None</SelectItem>
+                                                                            <SelectItem value={"Odd"}>Odd</SelectItem>
+                                                                            <SelectItem value={"Even"}>Even</SelectItem>
+                                                                        </SelectGroup>
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                <InputGroupAddon className="px-2">
+                                                                    <Cable />
+                                                                    Paridade
+                                                                </InputGroupAddon>
+                                                            </InputGroup>
+                                                            {errors.entradas?.[index]?.parity && (
+                                                                <InputError message={errors.entradas?.[index]?.parity?.message} />
+                                                            )}
+                                                        </>
                                                     )}
-                                                </>
-                                            )}
-                                        />
-                                    </div>
-                                    {/* Databits */}
-                                    <div>
-                                        <Controller
-                                            name={`entradas.${index}.dataBits`}
-                                            control={control}
-                                            rules={{ required: "Campo obrigatório" }}
-                                            render={({ field }) => (
-                                                <>
-                                                    <InputGroup>
-                                                        <Select onValueChange={field.onChange} value={field.value}>
-                                                            <SelectTrigger className="w-full">
-                                                                <SelectValue placeholder="Selecione um valor" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectGroup>
-                                                                    <SelectLabel>Valores</SelectLabel>
-                                                                    <SelectItem value={"8"}>8</SelectItem>
-                                                                    <SelectItem value={"7"}>7</SelectItem>
-                                                                </SelectGroup>
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <InputGroupAddon className="px-2">
-                                                            <Cable />
-                                                            DataBits
-                                                        </InputGroupAddon>
-                                                    </InputGroup>
-                                                    {errors.entradas?.[index]?.dataBits && (
-                                                        <InputError message={errors.entradas?.[index]?.dataBits?.message} />
+                                                />
+                                            </motion.div>
+
+                                            {/* stopBits */}
+                                            <motion.div initial={bouncingUpAnimation.initial} whileInView={bouncingUpAnimation.whileInView} transition={{ ...bouncingUpAnimation.transition, delay: 0.6 }} className="mb-5">
+                                                <Controller
+                                                    name={`entradas.${index}.stopBits`}
+                                                    control={control}
+                                                    rules={{ required: "Campo obrigatório" }}
+                                                    render={({ field }) => (
+                                                        <>
+                                                            <InputGroup>
+                                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                                    <SelectTrigger className="w-full">
+                                                                        <SelectValue placeholder="Selecione um valor" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent>
+                                                                        <SelectGroup>
+                                                                            <SelectLabel>Valores</SelectLabel>
+                                                                            <SelectItem value={"1"}>1</SelectItem>
+                                                                            <SelectItem value={"2"}>2</SelectItem>
+                                                                        </SelectGroup>
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                <InputGroupAddon className="px-2">
+                                                                    <Cable />
+                                                                    StopBit
+                                                                </InputGroupAddon>
+                                                            </InputGroup>
+                                                            {errors.entradas?.[index]?.stopBits && (
+                                                                <InputError message={errors.entradas?.[index]?.stopBits?.message} />
+                                                            )}
+                                                        </>
                                                     )}
-                                                </>
-                                            )}
-                                        />
-                                    </div>
+                                                />
+                                            </motion.div>
+                                        </>
+                                    )}
 
-                                    {/* parity */}
-                                    <div>
-                                        <Controller
-                                            name={`entradas.${index}.parity`}
-                                            control={control}
-                                            rules={{ required: "Campo obrigatório" }}
-                                            render={({ field }) => (
-                                                <>
-                                                    <InputGroup>
-                                                        <Select onValueChange={field.onChange} value={field.value}>
-                                                            <SelectTrigger className="w-full">
-                                                                <SelectValue placeholder="Selecione um valor" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectGroup>
-                                                                    <SelectLabel>Valores</SelectLabel>
-                                                                    <SelectItem value={"None"}>None</SelectItem>
-                                                                    <SelectItem value={"Odd"}>Odd</SelectItem>
-                                                                    <SelectItem value={"Even"}>Even</SelectItem>
-                                                                </SelectGroup>
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <InputGroupAddon className="px-2">
-                                                            <Cable />
-                                                            Paridade
-                                                        </InputGroupAddon>
-                                                    </InputGroup>
-                                                    {errors.entradas?.[index]?.parity && (
-                                                        <InputError message={errors.entradas?.[index]?.parity?.message} />
-                                                    )}
-                                                </>
-                                            )}
-                                        />
-                                    </div>
+                                </TabsContent>
+                                <TabsContent value="ieds"> <IedArray nestIndex={0} control={control} setValue={form.setValue}></IedArray></TabsContent>
 
-                                    {/* stopBits */}
-                                    <div>
-                                        <Controller
-                                            name={`entradas.${index}.stopBits`}
-                                            control={control}
-                                            rules={{ required: "Campo obrigatório" }}
-                                            render={({ field }) => (
-                                                <>
-                                                    <InputGroup>
-                                                        <Select onValueChange={field.onChange} value={field.value}>
-                                                            <SelectTrigger className="w-full">
-                                                                <SelectValue placeholder="Selecione um valor" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectGroup>
-                                                                    <SelectLabel>Valores</SelectLabel>
-                                                                    <SelectItem value={"1"}>1</SelectItem>
-                                                                    <SelectItem value={"2"}>2</SelectItem>
-                                                                </SelectGroup>
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <InputGroupAddon className="px-2">
-                                                            <Cable />
-                                                            StopBit
-                                                        </InputGroupAddon>
-                                                    </InputGroup>
-                                                    {errors.entradas?.[index]?.stopBits && (
-                                                        <InputError message={errors.entradas?.[index]?.stopBits?.message} />
-                                                    )}
-                                                </>
-                                            )}
-                                        />
-                                    </div>
-                                </>
-                            )}
+                                <TabsList className="w-full">
+                                    <TabsTrigger value="def">Definições</TabsTrigger>
+                                    <TabsTrigger value="ieds">IEDs</TabsTrigger>
+                                </TabsList>
+                            </motion.div>
 
 
-                        </motion.div>
+
+
+                        </Tabs>
 
                     </AnimatePresence>
-                ))}
+                ))
+                }
 
                 <Button
                     type="button"
                     variant="default"
                     className="mt-4 w-full font-bold"
-                    onClick={() => append({ protocolo: "Modbus", type: "", baudRate: "9600", dataBits: "8", parity: "None", stopBits: "1" })}
+                    onClick={() => append({ protocolo: "Modbus", type: "", baudRate: "9600", dataBits: "8", parity: "None", stopBits: "1", ip: "", port: "" })}
                 >
                     <Plus className="h-4 w-4 mr-2" /> Adicionar Entrada
                 </Button>
@@ -380,9 +416,13 @@ export default function Pt2({ isHidden, next, prev }: Props) {
                     {prev ? <Button type="button" onClick={prev}><ChevronLeft /></Button> : <Button className="invisible"></Button>}
                     {next ? <Button type="submit"><ChevronRight /></Button> : <Button className="invisible"></Button>}
                 </footer>
-            </form>
 
-        </div>
+            </form >
+
+
+
+
+        </div >
     )
 
 }

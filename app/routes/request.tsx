@@ -16,13 +16,13 @@ export default function Request() {
 
         <div className="max-h-screen">
             <ScrollArea >
-                <Card>
+                <Card >
                     <CardHeader>
                         <h1 className="text-lg font-bold">Requisição</h1>
                         <h2>Progresso do formulário</h2>
                         <Progress value={(formStep + 1) * 25}></Progress>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-2">
 
                         <P1 isHidden={formStep !== 0} next={() => { setFormStep(1) }} />
                         <P2 isHidden={formStep !== 1} next={() => { setFormStep(2) }} prev={() => { setFormStep(0) }} />
