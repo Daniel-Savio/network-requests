@@ -17,3 +17,10 @@ export const useRequestStore = create<RequestFormState>()(
         }
     )
 )
+
+export const useInputTypeStore = create(
+    (set) => ({
+        setData: (data: string[]) => set(data)
+
+    })
+)

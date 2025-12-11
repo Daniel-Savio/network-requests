@@ -21,6 +21,7 @@ const inputInfoSchema = requestFormSchema.pick({ // TODO: Fix this schema
 
 type InputInfo = z.infer<typeof inputInfoSchema>
 
+const restrictedValues = ["71-72", "74-75", "71-72-73"];
 
 export default function Pt2({ isHidden, next, prev }: Props) {
 
@@ -39,6 +40,7 @@ export default function Pt2({ isHidden, next, prev }: Props) {
         name: "entradas",
     });
 
+    const watchedEntradas = form.watch("entradas");
 
     function saveFormData(data: InputInfo) {
         storeData(data);
@@ -117,37 +119,54 @@ export default function Pt2({ isHidden, next, prev }: Props) {
                                     name={`entradas.${index}.type`}
                                     control={control}
                                     rules={{ required: "Campo obrigatório" }}
-                                    render={({ field }) => (
-                                        <>
-                                            <InputGroup>
-                                                <Select onValueChange={field.onChange} value={field.value}>
-                                                    <SelectTrigger className="w-full">
-                                                        <SelectValue placeholder="Selecione uma conexão" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectGroup>
-                                                            <SelectLabel>Opções de entrada</SelectLabel>
-                                                            {
-                                                                info.entradas.sort((a, b) => a.localeCompare(b)).map((item, index) => {
-                                                                    return (
-                                                                        <SelectItem key={index} value={item}>
-                                                                            {item}
+                                    render={({ field }) => {
+                                        const otherSelectedValues = watchedEntradas?.filter((_, i) => i !== index).map(e => e.type) ?? [];
+                                        const filteredOptions = info.entradas.filter(option => {
+                                            if (restrictedValues.includes(option)) {
+                                                return !otherSelectedValues.includes(option);
+                                            }
+                                            return true;
+                                        })
+
+                                        return (
+                                            <>
+                                                <InputGroup>
+                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                                        <SelectTrigger className="w-full">
+                                                            <SelectValue placeholder="Selecione uma conexão" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectGroup>
+                                                                <SelectLabel>Opções de entrada</SelectLabel>
+                                                                {
+                                                                    field.value && !filteredOptions.includes(field.value) && (
+                                                                        <SelectItem value={field.value}>
+                                                                            {field.value}
                                                                         </SelectItem>
                                                                     )
-                                                                })
-                                                            }
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
-                                                <InputGroupAddon>
-                                                    <SiHandshakeProtocol />
-                                                </InputGroupAddon>
-                                            </InputGroup>
-                                            {errors.entradas?.[index]?.type && (
-                                                <InputError message={errors.entradas?.[index]?.type?.message} />
-                                            )}
-                                        </>
-                                    )} />
+                                                                }
+                                                                {
+                                                                    filteredOptions.sort((a, b) => a.localeCompare(b)).map((item, index) => {
+                                                                        return (
+                                                                            <SelectItem key={index} value={item}>
+                                                                                {item}
+                                                                            </SelectItem>
+                                                                        )
+                                                                    })
+                                                                }
+                                                            </SelectGroup>
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <InputGroupAddon>
+                                                        <SiHandshakeProtocol />
+                                                    </InputGroupAddon>
+                                                </InputGroup>
+                                                {errors.entradas?.[index]?.type && (
+                                                    <InputError message={errors.entradas?.[index]?.type?.message} />
+                                                )}
+                                            </>
+                                        )
+                                    }} />
 
                             </div>
 
@@ -209,7 +228,7 @@ export default function Pt2({ isHidden, next, prev }: Props) {
                                                     <InputGroup>
                                                         <Select onValueChange={field.onChange} value={field.value}>
                                                             <SelectTrigger className="w-full">
-                                                                <SelectValue placeholder="Selecione um protocolo" />
+                                                                <SelectValue placeholder="Selecione um valor" />
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                 <SelectGroup>
@@ -344,6 +363,7 @@ export default function Pt2({ isHidden, next, prev }: Props) {
 
 
                         </motion.div>
+
                     </AnimatePresence>
                 ))}
 
@@ -351,7 +371,7 @@ export default function Pt2({ isHidden, next, prev }: Props) {
                     type="button"
                     variant="default"
                     className="mt-4 w-full font-bold"
-                    onClick={() => append({ protocolo: "", type: "" })}
+                    onClick={() => append({ protocolo: "Modbus", type: "", baudRate: "9600", dataBits: "8", parity: "None", stopBits: "1" })}
                 >
                     <Plus className="h-4 w-4 mr-2" /> Adicionar Entrada
                 </Button>
