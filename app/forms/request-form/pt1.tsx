@@ -12,6 +12,7 @@ import type z from "zod";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useState } from "react";
 import InputError from "@/components/error";
+import { useRequestStore } from "./store";
 
 
 interface Props {
@@ -36,12 +37,22 @@ type GeneralInfo = z.infer<typeof generalInfoSchema>
 
 export default function Pt1({ isHidden, next, prev }: Props) {
 
-  const [formData, setFormData] = useState<GeneralInfo | null >(null)
+  const [formData, setFormData] = useState<GeneralInfo | null>(null)
+  const storeData = useRequestStore((state) => state.setData)
 
-  const {formState: {errors}, ...form} = useForm<GeneralInfo>({
+  const { formState: { errors }, ...form } = useForm<GeneralInfo>({
     resolver: zodResolver(generalInfoSchema),
     defaultValues: {
-      gateway: "SDG",
+      gateway: useRequestStore.getState().gateway || "SDG",
+      requester: useRequestStore.getState().requester || "",
+      email: useRequestStore.getState().email || "",
+      departament: useRequestStore.getState().departament || "",
+      client: useRequestStore.getState().client || "",
+      project: useRequestStore.getState().project || "",
+      invoiceNumber: useRequestStore.getState().invoiceNumber || "",
+      clientNumber: useRequestStore.getState().clientNumber || "",
+      sigmaConnection: useRequestStore.getState().sigmaConnection || "Sem comunicação",
+
     }
   })
 
@@ -49,13 +60,15 @@ export default function Pt1({ isHidden, next, prev }: Props) {
     data.email = info.requester.find(item => item.name === requester)?.email || ""
     data.departament = info.requester.find(item => item.name === requester)?.departament || ""
     setFormData(data)
-    console.log(formData)
-    if (next) {
-      const virtualButton = document.createElement('button');
-      virtualButton.onclick = next;
-      virtualButton.click();
-    }
-   
+    storeData(data)
+    console.log(useRequestStore.getState())
+
+    // if (next) {
+    //   const virtualButton = document.createElement('button');
+    //   virtualButton.onclick = next;
+    //   virtualButton.click();
+    // }
+
   }
 
   const requester = form.watch("requester")
@@ -72,32 +85,32 @@ export default function Pt1({ isHidden, next, prev }: Props) {
           name="requester"
           render={({ field }) => (
             <>
-            <InputGroup className="flex gap-2 ">
-              <Select onValueChange={field.onChange} value={field.value}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecione um requerente" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Requerente</SelectLabel>
-                    {
-                      info.requester.sort((a, b) => a.name.localeCompare(b.name)).map((item, index) => {
-                        return (
-                          <SelectItem key={index} value={item.name}>
-                            {item.name}
-                          </SelectItem>
-                        )
-                      })
-                    }
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <InputGroupAddon align={"inline-start"}><Users /></InputGroupAddon>
-              <InputGroupAddon className="w-full text-zinc-500" align="inline-end">{requester ? info.requester.find(item => item.name === requester)?.departament : <span className="text-zinc-500">Departamento</span>}</InputGroupAddon>        
-            </InputGroup>
-            {errors.requester && <InputError message={errors.requester.message}  />}
-            {errors.email && <InputError message={errors.email.message}  />}
-            {errors.departament && <InputError message={errors.departament.message}  />}
+              <InputGroup className="flex gap-2 ">
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione um requerente" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Requerente</SelectLabel>
+                      {
+                        info.requester.sort((a, b) => a.name.localeCompare(b.name)).map((item, index) => {
+                          return (
+                            <SelectItem key={index} value={item.name}>
+                              {item.name}
+                            </SelectItem>
+                          )
+                        })
+                      }
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <InputGroupAddon align={"inline-start"}><Users /></InputGroupAddon>
+                <InputGroupAddon className="w-full text-zinc-500" align="inline-end">{requester ? info.requester.find(item => item.name === requester)?.departament : <span className="text-zinc-500">Departamento</span>}</InputGroupAddon>
+              </InputGroup>
+              {errors.requester && <InputError message={errors.requester.message} />}
+              {errors.email && <InputError message={errors.email.message} />}
+              {errors.departament && <InputError message={errors.departament.message} />}
             </>
           )}
         />
@@ -120,11 +133,11 @@ export default function Pt1({ isHidden, next, prev }: Props) {
             </Tooltip>
           </InputGroupAddon>
         </InputGroup>
-        {errors.project && <InputError message={errors.project.message}  />}
+        {errors.project && <InputError message={errors.project.message} />}
 
 
         <InputGroup>
-          <InputGroupInput {...form.register("client")} placeholder="Cliente - Fábrica - Interno">
+          <InputGroupInput {...form.register("client")} placeholder="Nome do Cliente - Nome da Fábrica - Interno">
           </InputGroupInput>
           <InputGroupAddon>
             <Factory />
@@ -140,7 +153,7 @@ export default function Pt1({ isHidden, next, prev }: Props) {
             </Tooltip>
           </InputGroupAddon>
         </InputGroup>
-        {errors.client && <InputError message={errors.client.message}  />}
+        {errors.client && <InputError message={errors.client.message} />}
 
         {/* Número do Projeto e Número do Cliente */}
 
@@ -151,7 +164,7 @@ export default function Pt1({ isHidden, next, prev }: Props) {
             <Hash />
           </InputGroupAddon>
         </InputGroup>
-        {errors.clientNumber && <InputError message={errors.clientNumber.message}  />}
+        {errors.clientNumber && <InputError message={errors.clientNumber.message} />}
         <InputGroup className="">
           <InputGroupInput {...form.register("invoiceNumber")} placeholder="Número do pedido">
           </InputGroupInput>
@@ -159,7 +172,7 @@ export default function Pt1({ isHidden, next, prev }: Props) {
             <FileDigit />
           </InputGroupAddon>
         </InputGroup>
-        {errors.invoiceNumber && <InputError message={errors.invoiceNumber.message}  />}
+        {errors.invoiceNumber && <InputError message={errors.invoiceNumber.message} />}
 
         {/* Gateway e Sigma*/}
         <Controller control={form.control}
@@ -187,14 +200,14 @@ export default function Pt1({ isHidden, next, prev }: Props) {
               </Select>
               <InputGroupAddon className="" align="inline-start">{
                 gateway === "SD+"
-                ? <img src={SDP} className="w-12 h-5 drop-shadow-lg" alt="" />
-                : <img src={SDG} className="w-12 h-5 drop-shadow-lg" alt="" />
+                  ? <img src={SDP} className="w-12 h-5 drop-shadow-lg" alt="" />
+                  : <img src={SDG} className="w-12 h-5 drop-shadow-lg" alt="" />
               }</InputGroupAddon>
 
             </InputGroup>
           )}
         />
-        {errors.gateway && <InputError message={errors.gateway.message}  />}
+        {errors.gateway && <InputError message={errors.gateway.message} />}
 
         <Controller control={form.control}
           name="sigmaConnection"
@@ -213,13 +226,13 @@ export default function Pt1({ isHidden, next, prev }: Props) {
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              <InputGroupAddon className="" align="inline-start"><Sigma className=""/> </InputGroupAddon>
+              <InputGroupAddon className="" align="inline-start"><Sigma className="" /> </InputGroupAddon>
 
             </InputGroup>
           )}
         />
-        {errors.sigmaConnection && <InputError message={errors.sigmaConnection.message}  />}
-        
+        {errors.sigmaConnection && <InputError message={errors.sigmaConnection.message} />}
+
         <footer className="flex gap-1 justify-between mt-5">
           <Button className="invisible"></Button>
           {next ? <Button type="submit"><ChevronRight /></Button> : <Button className="invisible"></Button>}
