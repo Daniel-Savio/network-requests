@@ -386,7 +386,7 @@ export default function Pt2({ isHidden, next, prev }: Props) {
                                     )}
 
                                 </TabsContent>
-                                <TabsContent value="ieds"> <IedArray nestIndex={0} control={control} setValue={form.setValue}></IedArray></TabsContent>
+                                <TabsContent value="ieds"> <IedArray nestIndex={index} control={control} setValue={form.setValue} getValues={form.getValues}></IedArray></TabsContent>
 
                                 <TabsList className="w-full">
                                     <TabsTrigger value="def">Definições</TabsTrigger>

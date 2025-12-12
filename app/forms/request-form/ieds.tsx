@@ -8,7 +8,7 @@ import { motion } from "motion/react";
 
 
 
-export const IedArray = ({ nestIndex, control, setValue }: { nestIndex: number, control: any, setValue: any }) => {
+export const IedArray = ({ nestIndex, control, setValue, getValues }: { nestIndex: number, control: any, setValue: any, getValues: any }) => {
     const { fields, append, remove } = useFieldArray({
         control,
         name: `entradas.${nestIndex}.ieds`
@@ -32,7 +32,7 @@ export const IedArray = ({ nestIndex, control, setValue }: { nestIndex: number, 
 
 
             {fields.map((item, k) => (
-                <motion.div key={item.id} className="flex flex-col gap-2 mt-2  border rounded-md" initial={bouncingUpAnimation.initial} whileInView={bouncingUpAnimation.whileInView} transition={{ ...bouncingUpAnimation.transition, delay: parseFloat(`${k * 0.1} `) }}>
+                <motion.div key={item.id} className="flex flex-col mt-2  border rounded-md" initial={bouncingUpAnimation.initial} whileInView={bouncingUpAnimation.whileInView} transition={{ ...bouncingUpAnimation.transition, delay: parseFloat(`${k * 0.1} `) }}>
                     <div className="flex items-center gap-2">
                         <Controller
                             name={`entradas.${nestIndex}.ieds.${k}.name`}
@@ -67,30 +67,34 @@ export const IedArray = ({ nestIndex, control, setValue }: { nestIndex: number, 
 
                             )}
                         />
+                    </div>
+                    <div className="flex items-center justify-center text-sm text-zinc-500 bg-zinc-100 mb-4 border-b rounded-b-md">
+                        {control._formValues.entradas[nestIndex].ieds[k].manufacturer ? control._formValues.entradas[nestIndex].ieds[k].manufacturer : "Fabricante"}
+                    </div>
 
-
-                    </div>
-                    <div className="flex items-center gap-2 w-full">
-                        <Controller
-                            name={`entradas.${nestIndex}.ieds.${k}.address`}
-                            control={control}
-                            render={({ field }) => <InputGroup className="w-full"><InputGroupInput className="w-full" type="number" placeholder="Endereço" {...field} value={field.value || ''} /></InputGroup>}
-                        />
-                        {(control._formValues.entradas[nestIndex].ieds[k].name === "BM" ||
-                            control._formValues.entradas[nestIndex].ieds[k].name === "COMM4") && (
-                                <Controller
-                                    name={`entradas.${nestIndex}.ieds.${k}.modules`}
-                                    control={control}
-                                    render={({ field }) => <InputGroup className="w-full"><InputGroupInput className="w-full" type="number" placeholder="Módulos ou SPS" {...field} /></InputGroup>}
-                                />)}
-                    </div>
-                    <div>
-                        <Controller
-                            name={`entradas.${nestIndex}.ieds.${k}.optional`}
-                            control={control}
-                            render={({ field }) => <InputGroupInput placeholder="Opcional" {...field} value={field.value || ''} />}
-                        />
-                    </div>
+                    <section className="space-y-2">
+                        <div className="flex items-center gap-2 w-full">
+                            <Controller
+                                name={`entradas.${nestIndex}.ieds.${k}.address`}
+                                control={control}
+                                render={({ field }) => <InputGroup className="w-full"><InputGroupInput className="w-full" type="number" placeholder="Endereço" {...field} value={field.value || ''} /></InputGroup>}
+                            />
+                            {(control._formValues.entradas[nestIndex].ieds[k].name === "BM" ||
+                                control._formValues.entradas[nestIndex].ieds[k].name === "COMM4") && (
+                                    <Controller
+                                        name={`entradas.${nestIndex}.ieds.${k}.modules`}
+                                        control={control}
+                                        render={({ field }) => <InputGroup className="w-full"><InputGroupInput className="w-full" type="number" placeholder="Módulos ou SPS" {...field} /></InputGroup>}
+                                    />)}
+                        </div>
+                        <div>
+                            <Controller
+                                name={`entradas.${nestIndex}.ieds.${k}.optional`}
+                                control={control}
+                                render={({ field }) => <InputGroupInput placeholder="Opcional" {...field} value={field.value || ''} />}
+                            />
+                        </div>
+                    </section>
                 </motion.div>
             ))}
 
