@@ -1,10 +1,11 @@
 import { Controller, useFieldArray } from "react-hook-form";
 import ied from "@/lib/ieds-info.json";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
+import { CircleQuestionMark, ListOrdered, Plus, RectangleEllipsis, X } from "lucide-react";
 import { motion } from "motion/react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 
 
@@ -25,9 +26,11 @@ export const IedArray = ({ nestIndex, control, setValue, getValues }: { nestInde
     }
 
     const allIeds = [...ied.ied, ...ied.ied_terceiros];
+    const iedsTreetech = [...ied.ied].sort((a, b) => a.nome.localeCompare(b.nome))
+    const iedsTerceiros = [...ied.ied_terceiros].sort((a, b) => a.nome.localeCompare(b.nome))
 
     return (
-        <div className="p-1">
+        <div className="p-1 min-h-[255px]">
             <h3 className="font-semibold  mb-2">IEDs</h3>
 
 
@@ -49,13 +52,21 @@ export const IedArray = ({ nestIndex, control, setValue, getValues }: { nestInde
                                         }}
                                         value={field.value}
                                     >
-                                        <SelectTrigger className="w-full rounded-none border-0">
+                                        <SelectTrigger className="w-full rounded-none border-0 text-md">
                                             <SelectValue placeholder="Selecione um IED" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {allIeds.map((ied, i) => (
-                                                <SelectItem key={i} value={ied.nome}>{ied.nome}</SelectItem>
-                                            ))}
+                                            <SelectGroup>
+
+                                                <SelectLabel className="text-primary font-bold bg-zinc-100">Treetech</SelectLabel>
+                                                {iedsTreetech.map((ied, i) => (
+                                                    <SelectItem key={i} value={ied.nome}>{ied.nome}</SelectItem>
+                                                ))}
+                                                <SelectLabel className="font-bold bg-zinc-100">Terceiros</SelectLabel>
+                                                {iedsTerceiros.map((ied, i) => (
+                                                    <SelectItem key={i} value={ied.nome}>{ied.nome} - {ied.fabricante}</SelectItem>
+                                                ))}
+                                            </SelectGroup>
                                         </SelectContent>
                                     </Select>
                                     <div >
@@ -77,36 +88,94 @@ export const IedArray = ({ nestIndex, control, setValue, getValues }: { nestInde
                             <Controller
                                 name={`entradas.${nestIndex}.ieds.${k}.address`}
                                 control={control}
-                                render={({ field }) => <InputGroup className="w-full"><InputGroupInput className="w-full" type="number" placeholder="Endereço" {...field} value={field.value || ''} /></InputGroup>}
+                                render={({ field }) =>
+                                    <InputGroup className="w-full">
+                                        <InputGroupInput className="w-full" type="number" placeholder="Endereço" {...field} value={field.value || ''} />
+                                        <InputGroupAddon><ListOrdered /></InputGroupAddon>
+                                        <InputGroupAddon align="inline-end">
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <InputGroupButton>
+                                                        <CircleQuestionMark className="size-4" />
+                                                    </InputGroupButton>
+                                                </TooltipTrigger>
+                                                <TooltipContent className="max-w-40 text-justify">Endereço do IED correspondente ao protocolo, essa informação pode estar no projeto mas se não houver pode colocar os valores em órdem crescente começando em 1</TooltipContent>
+                                            </Tooltip>
+                                        </InputGroupAddon>
+                                    </InputGroup>}
                             />
                             {(control._formValues.entradas[nestIndex].ieds[k].name === "BM" ||
-                                control._formValues.entradas[nestIndex].ieds[k].name === "COMM4") && (
+                                control._formValues.entradas[nestIndex].ieds[k].name === "COMM4" ||
+                                control._formValues.entradas[nestIndex].ieds[k].name === "Entrada Digital do gateway"
+                            ) && (
                                     <Controller
                                         name={`entradas.${nestIndex}.ieds.${k}.modules`}
                                         control={control}
-                                        render={({ field }) => <InputGroup className="w-full"><InputGroupInput className="w-full" type="number" placeholder="Módulos ou SPS" {...field} /></InputGroup>}
+                                        render={({ field }) =>
+                                            <InputGroup className="w-full">
+                                                <InputGroupInput className="w-full" type="number" placeholder="Módulos" {...field} />
+                                                <InputGroupAddon align="inline-end">
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <InputGroupButton>
+                                                                <CircleQuestionMark className="size-4" />
+                                                            </InputGroupButton>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent className="max-w-40 text-justify">
+                                                            Quantidade de módulos do IED, ou quantidade de SPSs conectados ou quantiade de Entradas Digitais para serem mapeadas
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </InputGroupAddon>
+                                            </InputGroup>}
                                     />)}
                         </div>
                         <div>
                             <Controller
                                 name={`entradas.${nestIndex}.ieds.${k}.optional`}
                                 control={control}
-                                render={({ field }) => <InputGroupInput placeholder="Opcional" {...field} value={field.value || ''} />}
+                                render={({ field }) =>
+                                    <InputGroup>
+                                        <InputGroupInput placeholder="Opcionais" {...field} value={field.value || ''} />
+                                        <InputGroupAddon align="inline-start"><RectangleEllipsis /></InputGroupAddon>
+                                        <InputGroupAddon align="inline-end">
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <InputGroupButton>
+                                                        <CircleQuestionMark className="size-4" />
+                                                    </InputGroupButton>
+                                                </TooltipTrigger>
+                                                <TooltipContent className="max-w-45 text-justify">
+                                                    Caso seja necessário habilitar algum opcional do IED,
+                                                    como por exemplo a leitura de Tap do AVR ou Diferencial de temperatura do TM.
+                                                    <br className="h-2" />
+                                                    <br className="h-2" />
+                                                    Caso não haja nenhum opcional:
+                                                    <br className="h-2" />
+                                                    <strong className="font-bolder text-sm">Pode deixar em branco.</strong>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </InputGroupAddon>
+                                    </InputGroup>
+
+
+                                }
                             />
                         </div>
                     </section>
                 </motion.div>
             ))}
 
+            <motion.div animate={{ x: 0, opacity: 1 }} initial={{ x: 30, opacity: 0 }} transition={{}} className="mt-2 w-full">
+                <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => append({ name: "", manufacturer: "", address: control._formValues.entradas[nestIndex].ieds.length + 1, modules: "", optional: "" })}
+                >
+                    <Plus className="size-4 mr-2" /> Adicionar IED
+                </Button>
+            </motion.div>
 
-            <Button
-                type="button"
-                variant="outline"
-                className="mt-2 w-full"
-                onClick={() => append({ name: "", manufacturer: "", address: "", modules: "", optional: "" })}
-            >
-                <Plus className="size-4 mr-2" /> Adicionar IED
-            </Button>
         </div>
     );
 };

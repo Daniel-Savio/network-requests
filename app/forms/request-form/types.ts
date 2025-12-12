@@ -14,7 +14,7 @@ export interface IedTerceiros {
 
 const itemSchema = z.object({
     protocolo: z.string().nonempty('Campo obrigatório'),
-    type: z.string(),
+    type: z.string().nonempty('Campo obrigatório'),
     ip: z.string().optional(),
     port: z.string().optional(),
     config: z.string().optional(),
@@ -25,15 +25,15 @@ const itemSchema = z.object({
     ieds: z
         .array(
             z.object({
-                name: z.string(),
+                name: z.string().nonempty('Campo obrigatório'),
                 manufacturer: z.string(),
-                address: z.string(),
+                address: z.string().nonempty('Campo obrigatório'),
                 modules: z.string().optional(),
                 optional: z.string().optional(),
 
             })
-        )
-        .optional(),
+        ).nonempty('Insira ao menos um IED')
+
 })
 
 export const requestFormSchema = z.object({

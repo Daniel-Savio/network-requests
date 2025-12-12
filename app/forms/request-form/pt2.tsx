@@ -89,8 +89,10 @@ export default function Pt2({ isHidden, next, prev }: Props) {
 
                                 <div className="flex justify-between items-center mb-2 border-b-2 pb-1">
                                     <div className="flex gap-2 items-center">
-                                        <Cable className="size-4" />
+                                        {watchedEntradas?.[index]?.type === "TCP/IP" ? <EthernetPort className="size-4" /> : <Cable className="size-4" />}
                                         <h2 className="font-semibold"> {index + 1}° Entrada </h2>
+                                        <span className="text-zinc-400">{watchedEntradas?.[index]?.type}</span>
+                                        <span className="text-zinc-400">{watchedEntradas?.[index]?.protocolo}</span>
                                     </div>
                                     <Button variant={"destructive"} className="" onClick={() => remove(index)}>
                                         <p className="text-sm">Remover</p>
@@ -389,14 +391,10 @@ export default function Pt2({ isHidden, next, prev }: Props) {
                                 <TabsContent value="ieds"> <IedArray nestIndex={index} control={control} setValue={form.setValue} getValues={form.getValues}></IedArray></TabsContent>
 
                                 <TabsList className="w-full">
-                                    <TabsTrigger value="def">Definições</TabsTrigger>
-                                    <TabsTrigger value="ieds">IEDs</TabsTrigger>
+                                    <TabsTrigger className="cursor-pointer" value="def">Definições</TabsTrigger>
+                                    <TabsTrigger className="cursor-pointer" value="ieds">IEDs</TabsTrigger>
                                 </TabsList>
                             </motion.div>
-
-
-
-
                         </Tabs>
 
                     </AnimatePresence>
@@ -407,7 +405,7 @@ export default function Pt2({ isHidden, next, prev }: Props) {
                     type="button"
                     variant="default"
                     className="mt-4 w-full font-bold"
-                    onClick={() => append({ protocolo: "Modbus", type: "", baudRate: "9600", dataBits: "8", parity: "None", stopBits: "1", ip: "", port: "" })}
+                    onClick={() => append({ protocolo: "", type: "", baudRate: "9600", dataBits: "8", parity: "None", stopBits: "1", ip: "", port: "", ieds: [] })}
                 >
                     <Plus className="h-4 w-4 mr-2" /> Adicionar Entrada
                 </Button>
