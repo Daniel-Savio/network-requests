@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 
 
-export const IedArray = ({ nestIndex, control, setValue, getValues }: { nestIndex: number, control: any, setValue: any, getValues: any }) => {
+export const IedArray = ({ nestIndex, control, setValue }: { nestIndex: number, control: any, setValue: any }) => {
     const { fields, append, remove } = useFieldArray({
         control,
         name: `entradas.${nestIndex}.ieds`
