@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useRequestStore } from "./store";
-import { requestFormSchema } from "./types";
+import { requestFormSchema, type IED } from "./types";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import type z from "zod";
 import info from "@/lib/request-info.json";
@@ -12,7 +12,7 @@ import {
 	Plus,
 	X,
 } from "lucide-react";
-import type { index } from "@react-router/dev/routes";
+
 import { AnimatePresence, motion } from "motion/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRef } from "react";
@@ -32,7 +32,8 @@ import {
 } from "@/components/ui/select";
 import { SiHandshakeProtocol } from "react-icons/si";
 import InputError from "@/components/error";
-import { IedArray } from "./ieds";
+import { IedArrayOutput } from "./ieds-output";
+
 
 const bouncingUpAnimation = {
 	initial: { y: 10, opacity: 0 },
@@ -50,23 +51,39 @@ interface Props {
 	next?: () => void;
 	prev?: () => void;
 }
-const restrictedValues = ["71-72", "74-75", "71-72-73"];
 
 const outputInfoSchema = requestFormSchema.pick({
 	saidas: true,
 });
+
 type OutputInfo = z.infer<typeof outputInfoSchema>;
 
-
+function changePortBasedOnProtocol(protocol: string) {
+	if (protocol === "Modbus") return "502";
+	if (protocol === "DNP3") return "20000";
+	if (protocol === "IEC61850") return "102";
+    if (protocol === "AMQP") return "5672";
+	return "";
+}
 
 export default function Pt3({ isHidden, next, prev }: Props) {
+
+
 	const storedFormData = useRequestStore((state) => state);
 	const inputRef = useRef<HTMLDivElement[] | null>([]);
+    
 
+    //Separando os IEDs que foram escolhidos nas entradas
+    const defaultIeds: IED[]|undefined = storedFormData.entradas?.flatMap(entry => entry.ieds);
+    const availableIeds = storedFormData.entradas?.flatMap(entry => entry.ieds).map(ied => ({
+        nome: ied.name,
+        fabricante: ied.manufacturer
+    }));
+
+
+    // Opçoes de saída disponíveis baseadas nas escolhas das entradas
     const uniqueTypes: string[] = storedFormData ? [...new Set(storedFormData.entradas?.map((entry) => entry.type))] : [];
-
     const remainingOptions = info.saidas.filter(option => !uniqueTypes.includes(option));
-    console.log(remainingOptions)
 
 	// Form
 	const {
@@ -100,6 +117,8 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 	function saveFormData(data: OutputInfo) {
 		console.log("Saving output data:", data);
 	}
+
+
 
 	return (
 		<div className="p-2 gap-2" style={isHidden ? { display: "none" } : {}}>
@@ -171,7 +190,10 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 												<>
 													<InputGroup>
 														<Select
-															onValueChange={field.onChange}
+															onValueChange={(e)=>{
+                                                                field.onChange(e);
+                                                                form.setValue(`saidas.${index}.port`, changePortBasedOnProtocol(e));
+                                                            }}
 															value={field.value}
 														>
 															<SelectTrigger className="w-full">
@@ -234,7 +256,7 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 																</SelectTrigger>
 																<SelectContent>
 																	<SelectGroup>
-																		<SelectLabel>Opções de entrada</SelectLabel>
+																		<SelectLabel>Opções de Saída</SelectLabel>
 																		{remainingOptions
 																			.sort((a, b) => a.localeCompare(b))
 																			.map((item, index) => {
@@ -555,19 +577,24 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 
 								<TabsContent value="ieds">
 									{" "}
-									<IedArray
+									<IedArrayOutput
 										nestIndex={index}
 										control={control}
 										setValue={form.setValue}
-									></IedArray>
+                                        defaultIeds={defaultIeds}
+                                        availableIeds={availableIeds}
+									></IedArrayOutput>
 								</TabsContent>
 
 								<TabsList className="w-full">
 									<TabsTrigger className="cursor-pointer" value="def">
 										Definições
 									</TabsTrigger>
-									<TabsTrigger className="cursor-pointer" value="ieds">
+									<TabsTrigger className="cursor-pointer flex gap-2" value="ieds">
 										IEDs
+                                        <span>
+                                            {form.getValues(`saidas.${index}.ieds`)?.length || defaultIeds?.length}
+                                        </span>
 									</TabsTrigger>
 								</TabsList>
 							</motion.div>
@@ -587,9 +614,10 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 							dataBits: "8",
 							parity: "None",
 							stopBits: "1",
-							ip: "",
+							ip: "192.168.10.87",
 							port: "",
-							ieds: [],
+                            ieds: []
+						
 						})
 					}
 				>

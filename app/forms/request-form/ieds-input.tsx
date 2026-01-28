@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { CircleQuestionMark, ListOrdered, Plus, RectangleEllipsis, X } from "lucide-react";
 import { motion } from "motion/react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import type { IED } from "./types";
 
 
 
-export const IedArray = ({ nestIndex, control, setValue }: { nestIndex: number, control: any, setValue: any }) => {
-    const { fields, append, remove } = useFieldArray({
+export const IedArrayInput = ({ nestIndex, control, setValue, availableIeds, defaultIeds }: { nestIndex: number, control: any, setValue: any, availableIeds?: {nome: string, fabricante: string}[], defaultIeds?: IED[] }) => {
+    const { fields, append, remove,  } = useFieldArray({
         control,
-        name: `entradas.${nestIndex}.ieds`
+        name: `entradas.${nestIndex}.ieds`,
     });
     const bouncingUpAnimation = {
         initial: { y: 10, opacity: 0 },
@@ -25,9 +26,22 @@ export const IedArray = ({ nestIndex, control, setValue }: { nestIndex: number, 
         }
     }
 
-    const allIeds = [...ied.ied, ...ied.ied_terceiros];
-    const iedsTreetech = [...ied.ied].sort((a, b) => a.nome.localeCompare(b.nome))
-    const iedsTerceiros = [...ied.ied_terceiros].sort((a, b) => a.nome.localeCompare(b.nome))
+    if(defaultIeds && fields.length === 0){
+        defaultIeds.forEach((ied, index) => {
+            append({
+                name: ied.name,
+                manufacturer: ied.manufacturer,
+                address: index+1,
+                modules: ied.modules,
+                optional: ied.optional
+            })
+        })
+    }
+    const allIeds = availableIeds ? availableIeds : [...ied.ied, ...ied.ied_terceiros];
+    const iedsTreetech = allIeds.filter(ied => ied.fabricante === "Treetech").sort((a, b) => a.nome.localeCompare(b.nome));
+    const iedsTerceiros = allIeds.filter(ied => ied.fabricante !== "Treetech").sort((a, b) => a.nome.localeCompare(b.nome));
+
+
 
     return (
         <div className="p-1 min-h-[255px]">
@@ -60,11 +74,11 @@ export const IedArray = ({ nestIndex, control, setValue }: { nestIndex: number, 
 
                                                 <SelectLabel className="text-primary font-bold bg-zinc-100">Treetech</SelectLabel>
                                                 {iedsTreetech.map((ied, i) => (
-                                                    <SelectItem key={i} value={ied.nome}>{ied.nome}</SelectItem>
+                                                    <SelectItem key={`input-${ied.nome}`} value={ied.nome}>{ied.nome}</SelectItem>
                                                 ))}
                                                 <SelectLabel className="font-bold bg-zinc-100">Terceiros</SelectLabel>
                                                 {iedsTerceiros.map((ied, i) => (
-                                                    <SelectItem key={i} value={ied.nome}>{ied.nome} - {ied.fabricante}</SelectItem>
+                                                    <SelectItem key={`input-${ied.nome}`} value={ied.nome}>{ied.nome} - {ied.fabricante}</SelectItem>
                                                 ))}
                                             </SelectGroup>
                                         </SelectContent>

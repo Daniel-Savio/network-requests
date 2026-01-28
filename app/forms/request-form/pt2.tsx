@@ -30,7 +30,7 @@ import info from "@/lib/request-info.json";
 import { SiHandshakeProtocol } from "react-icons/si";
 import InputError from "@/components/error";
 import { AnimatePresence, motion } from "motion/react";
-import { IedArray } from "./ieds";
+import { IedArrayInput } from "./ieds-input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRef } from "react";
 
@@ -104,14 +104,27 @@ export default function Pt2({ isHidden, next, prev }: Props) {
 						behavior: "smooth",
 					});
 					throw new Error(`Adicione ao menos um IED na ${index + 1}° entrada.`);
-				} else {
+				}
+
+				entrada.ieds.forEach((ied, iedIndex) => {
+					if (!ied.name || !ied.manufacturer) {
+						throw new Error(
+							`IED ${iedIndex + 1} não foi selecionado  na ${index + 1}° entrada.`,
+						);
+					}
+
+					else {
+					storeData(data);
 					if (next) {
 						const virtualButton = document.createElement("button");
 						virtualButton.onclick = next;
 						virtualButton.click();
 					}
-					storeData(data);
+					
 				}
+				});
+			
+				
 			});
 		} catch (error: any) {
 			toast.error(
@@ -599,11 +612,11 @@ export default function Pt2({ isHidden, next, prev }: Props) {
 
 								<TabsContent value="ieds">
 									{" "}
-									<IedArray
+									<IedArrayInput
 										nestIndex={index}
 										control={control}
 										setValue={form.setValue}
-									></IedArray>
+									></IedArrayInput>
 								</TabsContent>
 
 								<TabsList className="w-full">
