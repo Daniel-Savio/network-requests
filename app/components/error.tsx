@@ -6,6 +6,6 @@ interface Props{
 export default function InputError({message}: Props) {
     
   return (
-    <span className="text-xs text-destructive flex gap-1 items-center"><CircleX size={12}/> {message}</span>
+    <span className="text-xs mt-2 text-destructive flex gap-1 items-center"><CircleX size={12}/> {message}</span>
   )
 }

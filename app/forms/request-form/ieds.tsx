@@ -33,7 +33,7 @@ export const IedArray = ({ nestIndex, control, setValue, getValues }: { nestInde
         <div className="p-1 min-h-[255px]">
             <h3 className="font-semibold  mb-2">IEDs</h3>
 
-
+            
             {fields.map((item, k) => (
                 <motion.div key={item.id} className="flex flex-col mt-2  border rounded-md" initial={bouncingUpAnimation.initial} whileInView={bouncingUpAnimation.whileInView} transition={{ ...bouncingUpAnimation.transition, delay: parseFloat(`${k * 0.1} `) }}>
                     <div className="flex items-center gap-2">
@@ -71,7 +71,7 @@ export const IedArray = ({ nestIndex, control, setValue, getValues }: { nestInde
                                     </Select>
                                     <div >
                                         <Button type="button" variant="outline" className="bg-linear-to-r from-zinc-200 to-red-200 hover:bg-red-200 " onClick={() => remove(k)}>
-                                            <X className="size-3 text-red-700" />
+                                            <X  className="size-4 text-red-700" />
                                         </Button>
                                     </div>
                                 </div>

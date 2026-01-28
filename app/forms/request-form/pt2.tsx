@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { requestFormSchema } from "./types"
-import { z, ZodError } from "zod"
+import { set, z } from "zod"
 import { useRequestStore } from "./store"
+import { toast } from "sonner"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { Cable, ChevronLeft, ChevronRight, EthernetPort, Plus, X } from "lucide-react"
@@ -12,14 +13,19 @@ import InputError from "@/components/error"
 import { AnimatePresence, motion } from "motion/react"
 import { IedArray } from "./ieds"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useRef, type ReactElement } from "react"
+
+
 interface Props {
     isHidden: boolean
     next?: () => void
     prev?: () => void
 }
-const inputInfoSchema = requestFormSchema.pick({ // TODO: Fix this schema
+const inputInfoSchema = requestFormSchema.pick({
     entradas: true,
 })
+
+
 
 type InputInfo = z.infer<typeof inputInfoSchema>
 
@@ -38,39 +44,58 @@ const bouncingUpAnimation = {
 }
 
 export default function Pt2({ isHidden, next, prev }: Props) {
-
+    const inputRef = useRef<HTMLDivElement[]|null> ([]);
     const storeData = useRequestStore((state) => state.setData);
     const storedEntradas = useRequestStore((state) => state.entradas);
-
+    const storedFormData = useRequestStore((state) => state);
     const { formState: { errors }, control, ...form } = useForm<InputInfo>({
         // resolver: zodResolver(inputInfoSchema),
         defaultValues: {
             entradas: storedEntradas || [{ protocolo: "", type: "", ip: "", port: "", baudRate: "9600", dataBits: "8", parity: "None", stopBits: "1" }]
         }
     });
-
     const { fields, append, remove } = useFieldArray({
         control,
         name: "entradas",
     });
-
     const watchedEntradas = form.watch("entradas");
 
+
+
     function saveFormData(data: InputInfo) {
-        storeData(data);
-        console.log(data)
+        //?? Validaçoes individuais ??//
+        if(!data.entradas || data.entradas.length === 0){
+            toast.error("Adicione ao menos uma entrada.");
+            return;
+        }
+        //?? Validando as informaçoes das entradas ??//
+        data.entradas.forEach((entrada, index) => {
+            if (!entrada.ieds || entrada.ieds.length === 0!) {
+                toast.error(`Selecione ao menos um IED na entrada: ${index + 1}.`);
+                window.scrollTo({ top: inputRef.current![index].offsetTop, behavior: 'smooth' });
+                return;
+            }
+            else{
+                storeData(data);
+            }
+        });
+        console.log(storedFormData)
         // if (next) {
         //     next();
         // }
     }
 
     return (
+
         <div className="p-2 gap-2" style={isHidden ? { display: "none" } : {}}>
+
             <form onSubmit={form.handleSubmit(saveFormData)}>
 
                 <h1 className="text-lg font-bold">Entradas</h1>
 
+                {/* !! Entradas !!  */}
                 {fields.map((currentField, index) => (
+
                     <AnimatePresence key={index}>
                         <Tabs defaultValue="def">
 
@@ -87,7 +112,11 @@ export default function Pt2({ isHidden, next, prev }: Props) {
                             >
 
 
-                                <div className="flex justify-between items-center mb-2 border-b-2 pb-1">
+                                <div id={index.toString()} className="flex justify-between items-center mb-2 border-b-2 pb-1" ref={(el) => {
+                                    if (inputRef.current) {
+                                        inputRef.current[index] = el!;
+                                    }
+                                }}>
                                     <div className="flex gap-2 items-center">
                                         {watchedEntradas?.[index]?.type === "TCP/IP" ? <EthernetPort className="size-4" /> : <Cable className="size-4" />}
                                         <h2 className="font-semibold"> {index + 1}° Entrada </h2>
@@ -388,16 +417,23 @@ export default function Pt2({ isHidden, next, prev }: Props) {
                                     )}
 
                                 </TabsContent>
+
+
                                 <TabsContent value="ieds"> <IedArray nestIndex={index} control={control} setValue={form.setValue} getValues={form.getValues}></IedArray></TabsContent>
 
                                 <TabsList className="w-full">
                                     <TabsTrigger className="cursor-pointer" value="def">Definições</TabsTrigger>
-                                    <TabsTrigger className="cursor-pointer" value="ieds">IEDs</TabsTrigger>
+                                    <TabsTrigger
+                                     className="cursor-pointer" value="ieds">IEDs</TabsTrigger>
                                 </TabsList>
+
+
                             </motion.div>
                         </Tabs>
 
                     </AnimatePresence>
+
+
                 ))
                 }
 
@@ -416,9 +452,6 @@ export default function Pt2({ isHidden, next, prev }: Props) {
                 </footer>
 
             </form >
-
-
-
 
         </div >
     )
