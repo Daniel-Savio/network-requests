@@ -56,9 +56,17 @@ const outputInfoSchema = requestFormSchema.pick({
 	saidas: true,
 });
 type OutputInfo = z.infer<typeof outputInfoSchema>;
+
+
+
 export default function Pt3({ isHidden, next, prev }: Props) {
 	const storedFormData = useRequestStore((state) => state);
 	const inputRef = useRef<HTMLDivElement[] | null>([]);
+
+    const uniqueTypes: string[] = storedFormData ? [...new Set(storedFormData.entradas?.map((entry) => entry.type))] : [];
+
+    const remainingOptions = info.saidas.filter(option => !uniqueTypes.includes(option));
+    console.log(remainingOptions)
 
 	// Form
 	const {
@@ -214,17 +222,6 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 											control={control}
 											rules={{ required: "Campo obrigatório" }}
 											render={({ field }) => {
-												const otherSelectedValues =
-													watchedSaidas
-														?.filter((_, i) => i !== index)
-														.map((e) => e.type) ?? [];
-												const filteredOptions = info.saidas.filter((option) => {
-													if (restrictedValues.includes(option)) {
-														return !otherSelectedValues.includes(option);
-													}
-													return true;
-												});
-
 												return (
 													<>
 														<InputGroup>
@@ -238,15 +235,7 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 																<SelectContent>
 																	<SelectGroup>
 																		<SelectLabel>Opções de entrada</SelectLabel>
-																		{field.value &&
-																			!filteredOptions.includes(
-																				field.value,
-																			) && (
-																				<SelectItem value={field.value}>
-																					{field.value}
-																				</SelectItem>
-																			)}
-																		{filteredOptions
+																		{remainingOptions
 																			.sort((a, b) => a.localeCompare(b))
 																			.map((item, index) => {
 																				return (
@@ -627,3 +616,5 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 		</div>
 	);
 }
+
+

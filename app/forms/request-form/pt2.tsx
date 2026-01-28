@@ -62,7 +62,7 @@ export default function Pt2({ isHidden, next, prev }: Props) {
 	const inputRef = useRef<HTMLDivElement[] | null>([]);
 	const storeData = useRequestStore((state) => state.setData);
 	const storedEntradas = useRequestStore((state) => state.entradas);
-	const storedFormData = useRequestStore((state) => state);
+	
 	const {
 		formState: { errors },
 		control,
