@@ -69,7 +69,6 @@ function changePortBasedOnProtocol(protocol: string) {
 export default function Pt3({ isHidden, next, prev }: Props) {
 	const storedFormData = useRequestStore((state) => state);
 	const storeData = useRequestStore((state) => state.setData);
-
 	const inputRef = useRef<HTMLDivElement[] | null>([]);
 
 	//Separando os IEDs que foram escolhidos nas entradas
@@ -172,6 +171,7 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 
 	return (
 		<div className="p-2 gap-2" style={isHidden ? { display: "none" } : {}}>
+
 			<form onSubmit={form.handleSubmit(saveFormData)}>
 				<h1 className="text-lg font-bold">Saídas</h1>
 
