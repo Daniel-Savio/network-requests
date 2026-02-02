@@ -33,7 +33,7 @@ import {
 import { SiHandshakeProtocol } from "react-icons/si";
 import InputError from "@/components/error";
 import { IedArrayOutput } from "./ieds-output";
-
+import { toast } from "sonner";
 
 const bouncingUpAnimation = {
 	initial: { y: 10, opacity: 0 },
@@ -62,28 +62,34 @@ function changePortBasedOnProtocol(protocol: string) {
 	if (protocol === "Modbus") return "502";
 	if (protocol === "DNP3") return "20000";
 	if (protocol === "IEC61850") return "102";
-    if (protocol === "AMQP") return "5672";
+	if (protocol === "AMQP") return "5672";
 	return "";
 }
 
 export default function Pt3({ isHidden, next, prev }: Props) {
-
-
 	const storedFormData = useRequestStore((state) => state);
+	const storeData = useRequestStore((state) => state.setData);
+
 	const inputRef = useRef<HTMLDivElement[] | null>([]);
-    
 
-    //Separando os IEDs que foram escolhidos nas entradas
-    const defaultIeds: IED[]|undefined = storedFormData.entradas?.flatMap(entry => entry.ieds);
-    const availableIeds = storedFormData.entradas?.flatMap(entry => entry.ieds).map(ied => ({
-        nome: ied.name,
-        fabricante: ied.manufacturer
-    }));
+	//Separando os IEDs que foram escolhidos nas entradas
+	const defaultIeds: IED[] | undefined = storedFormData.entradas?.flatMap(
+		(entry) => entry.ieds,
+	);
+	const availableIeds = storedFormData.entradas
+		?.flatMap((entry) => entry.ieds)
+		.map((ied) => ({
+			nome: ied.name,
+			fabricante: ied.manufacturer,
+		}));
 
-
-    // Opçoes de saída disponíveis baseadas nas escolhas das entradas
-    const uniqueTypes: string[] = storedFormData ? [...new Set(storedFormData.entradas?.map((entry) => entry.type))] : [];
-    const remainingOptions = info.saidas.filter(option => !uniqueTypes.includes(option));
+	// Opçoes de saída disponíveis baseadas nas escolhas das entradas
+	const uniqueTypes: string[] = storedFormData
+		? [...new Set(storedFormData.entradas?.map((entry) => entry.type))]
+		: [];
+	const remainingOptions = info.saidas.filter(
+		(option) => !uniqueTypes.includes(option),
+	);
 
 	// Form
 	const {
@@ -113,12 +119,56 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 	});
 
 	const watchedSaidas = form.watch("saidas");
-
 	function saveFormData(data: OutputInfo) {
-		console.log("Saving output data:", data);
+		//?? Validaçoes individuais ??//
+		
+		try {
+			if (!data.saidas || data.saidas.length === 0) {
+				throw new Error("Adicione ao menos uma entrada.");
+			}
+			data.saidas.forEach((saida, index) => {
+				if (!saida.ieds || saida.ieds.length === 0!) {
+					window.scrollTo({
+						top: inputRef.current![index].offsetTop,
+						behavior: "smooth",
+					});
+					throw new Error(`Adicione ao menos um IED na ${index + 1}° entrada.`);
+				}
+
+				saida.ieds.forEach((ied, iedIndex) => {
+					if (!ied.name || !ied.manufacturer) {
+						throw new Error(
+							`IED ${iedIndex + 1} não foi selecionado  na ${index + 1}° entrada.`,
+						);
+					} else if (ied.name === "BM" && ied.modules === "") {
+						throw new Error(
+							`IED ${iedIndex + 1} - ${ied.name} não possui módulos selecionados na ${index + 1}° entrada.`,
+						);
+					} else if (ied.name === "Entradas Digitais" && ied.modules === "") {
+						throw new Error(
+							`IED ${iedIndex + 1} - ${ied.name} não possui nenhum borne selecionado na ${index + 1}° entrada.`,
+						);
+					} else if (ied.name === "COMM4" && ied.modules === "") {
+						throw new Error(
+							`IED ${iedIndex + 1} - ${ied.name} não possui nenhum número de SPS atrelado na ${index + 1}° entrada.`,
+						);
+					} else {
+						storeData(data);
+						if (next) {
+							const virtualButton = document.createElement("button");
+							virtualButton.onclick = next;
+							virtualButton.click();
+						}
+					}
+				});
+			});
+		} catch (error: any) {
+			toast.error(
+				error.message ||
+					"Erro ao salvar os dados. Verifique as informações e tente novamente.",
+			);
+		}
 	}
-
-
 
 	return (
 		<div className="p-2 gap-2" style={isHidden ? { display: "none" } : {}}>
@@ -190,10 +240,13 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 												<>
 													<InputGroup>
 														<Select
-															onValueChange={(e)=>{
-                                                                field.onChange(e);
-                                                                form.setValue(`saidas.${index}.port`, changePortBasedOnProtocol(e));
-                                                            }}
+															onValueChange={(e) => {
+																field.onChange(e);
+																form.setValue(
+																	`saidas.${index}.port`,
+																	changePortBasedOnProtocol(e),
+																);
+															}}
 															value={field.value}
 														>
 															<SelectTrigger className="w-full">
@@ -581,8 +634,8 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 										nestIndex={index}
 										control={control}
 										setValue={form.setValue}
-                                        defaultIeds={defaultIeds}
-                                        availableIeds={availableIeds}
+										defaultIeds={defaultIeds}
+										availableIeds={availableIeds}
 									></IedArrayOutput>
 								</TabsContent>
 
@@ -590,11 +643,21 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 									<TabsTrigger className="cursor-pointer" value="def">
 										Definições
 									</TabsTrigger>
-									<TabsTrigger className="cursor-pointer flex gap-2" value="ieds">
+									<TabsTrigger
+										className="cursor-pointer flex gap-2"
+										value="ieds"
+									>
 										IEDs
-                                        <span>
-                                            {form.getValues(`saidas.${index}.ieds`)?.length || defaultIeds?.length}
-                                        </span>
+										<span
+											className={
+												!form.getValues(`saidas.${index}.ieds`)?.length
+													? "text-red-500"
+													: "text-green-600" + " font-bold ml-1"
+											}
+										>
+											{form.getValues(`saidas.${index}.ieds`)?.length ||
+												"Nenhum IED selecionado"}
+										</span>
 									</TabsTrigger>
 								</TabsList>
 							</motion.div>
@@ -616,8 +679,7 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 							stopBits: "1",
 							ip: "192.168.10.87",
 							port: "",
-                            ieds: []
-						
+							ieds: [],
 						})
 					}
 				>
@@ -644,5 +706,3 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 		</div>
 	);
 }
-
-

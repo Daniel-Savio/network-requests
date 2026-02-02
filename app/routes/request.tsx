@@ -9,7 +9,7 @@ import { useState } from "react"
 
 
 export default function Request() {
-    const [formStep, setFormStep] = useState(1)
+    const [formStep, setFormStep] = useState(0)
 
 
     return (
@@ -20,7 +20,7 @@ export default function Request() {
                     <CardHeader>
                         <h1 className="text-lg font-bold">Requisição</h1>
                         <h2>Progresso do formulário</h2>
-                        <Progress value={(formStep + 1) * 25}></Progress>
+                        <Progress value={(formStep + 1) * 25}/>
                     </CardHeader>
                     <CardContent className="p-2">
 

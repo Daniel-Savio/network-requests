@@ -62,7 +62,7 @@ export default function Pt2({ isHidden, next, prev }: Props) {
 	const inputRef = useRef<HTMLDivElement[] | null>([]);
 	const storeData = useRequestStore((state) => state.setData);
 	const storedEntradas = useRequestStore((state) => state.entradas);
-	
+
 	const {
 		formState: { errors },
 		control,
@@ -111,20 +111,27 @@ export default function Pt2({ isHidden, next, prev }: Props) {
 						throw new Error(
 							`IED ${iedIndex + 1} não foi selecionado  na ${index + 1}° entrada.`,
 						);
+					} else if (ied.name === "BM" && ied.modules === "") {
+						throw new Error(
+							`IED ${iedIndex + 1} - ${ied.name} não possui módulos selecionados na ${index + 1}° entrada.`,
+						);
+					} else if (ied.name === "Entradas Digitais" && ied.modules === "") {
+						throw new Error(
+							`IED ${iedIndex + 1} - ${ied.name} não possui nenhum borne selecionado na ${index + 1}° entrada.`,
+						);
+					} else if (ied.name === "COMM4" && ied.modules === "") {
+						throw new Error(
+							`IED ${iedIndex + 1} - ${ied.name} não possui nenhum número de SPS atrelado na ${index + 1}° entrada.`,
+						);
+					} else {
+						storeData(data);
+						if (next) {
+							const virtualButton = document.createElement("button");
+							virtualButton.onclick = next;
+							virtualButton.click();
+						}
 					}
-
-					else {
-					storeData(data);
-					if (next) {
-						const virtualButton = document.createElement("button");
-						virtualButton.onclick = next;
-						virtualButton.click();
-					}
-					
-				}
 				});
-			
-				
 			});
 		} catch (error: any) {
 			toast.error(
@@ -625,6 +632,16 @@ export default function Pt2({ isHidden, next, prev }: Props) {
 									</TabsTrigger>
 									<TabsTrigger className="cursor-pointer" value="ieds">
 										IEDs
+										<span
+											className={
+												!form.getValues(`entradas.${index}.ieds`)?.length
+													? "text-red-500"
+													: "text-green-600" + " font-bold ml-1"
+											}
+										>
+											{form.getValues(`entradas.${index}.ieds`)?.length ||
+												"Nenhum IED selecionado"}
+										</span>
 									</TabsTrigger>
 								</TabsList>
 							</motion.div>
