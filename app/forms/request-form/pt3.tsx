@@ -119,49 +119,44 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 
 	const watchedSaidas = form.watch("saidas");
 	function saveFormData(data: OutputInfo) {
-		//?? Validaçoes individuais ??//
-		
+		let isValid = true;
 		try {
 			if (!data.saidas || data.saidas.length === 0) {
-				throw new Error("Adicione ao menos uma entrada.");
+				throw new Error("Adicione ao menos uma saída.");
 			}
-			data.saidas.forEach((saida, index) => {
-				if (!saida.ieds || saida.ieds.length === 0!) {
+			for (const [index, saida] of data.saidas.entries()) {
+				if (!isValid) break;
+				if (!saida.ieds || saida.ieds.length === 0) {
 					window.scrollTo({
 						top: inputRef.current![index].offsetTop,
 						behavior: "smooth",
 					});
-					throw new Error(`Adicione ao menos um IED na ${index + 1}° entrada.`);
+					throw new Error(`Adicione ao menos um IED na ${index + 1}° saída.`);
 				}
 
-				saida.ieds.forEach((ied, iedIndex) => {
+				for (const [iedIndex, ied] of saida.ieds.entries()) {
 					if (!ied.name || !ied.manufacturer) {
-						throw new Error(
-							`IED ${iedIndex + 1} não foi selecionado  na ${index + 1}° entrada.`,
-						);
+						throw new Error(`IED ${iedIndex + 1} não foi selecionado  na ${index + 1}° saída.`);
 					} else if (ied.name === "BM" && ied.modules === "") {
-						throw new Error(
-							`IED ${iedIndex + 1} - ${ied.name} não possui módulos selecionados na ${index + 1}° entrada.`,
-						);
+						throw new Error(`IED ${iedIndex + 1} - ${ied.name} não possui módulos selecionados na ${index + 1}° saída.`);
 					} else if (ied.name === "Entradas Digitais" && ied.modules === "") {
-						throw new Error(
-							`IED ${iedIndex + 1} - ${ied.name} não possui nenhum borne selecionado na ${index + 1}° entrada.`,
-						);
+						throw new Error(`IED ${iedIndex + 1} - ${ied.name} não possui nenhum borne selecionado na ${index + 1}° saída.`);
 					} else if (ied.name === "COMM4" && ied.modules === "") {
-						throw new Error(
-							`IED ${iedIndex + 1} - ${ied.name} não possui nenhum número de SPS atrelado na ${index + 1}° entrada.`,
-						);
-					} else {
-						storeData(data);
-						if (next) {
-							const virtualButton = document.createElement("button");
-							virtualButton.onclick = next;
-							virtualButton.click();
-						}
+						throw new Error(`IED ${iedIndex + 1} - ${ied.name} não possui nenhum número de SPS atrelado na ${index + 1}° saída.`);
 					}
-				});
-			});
+				}
+			}
+
+			if (isValid) {
+				storeData(data);
+				if (next) {
+					const virtualButton = document.createElement("button");
+					virtualButton.onclick = next;
+					virtualButton.click();
+				}
+			}
 		} catch (error: any) {
+			isValid = false;
 			toast.error(
 				error.message ||
 					"Erro ao salvar os dados. Verifique as informações e tente novamente.",
