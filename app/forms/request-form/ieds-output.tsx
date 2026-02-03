@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import {
 	CircleQuestionMark,
+	Copy,
 	ListOrdered,
 	Plus,
 	RectangleEllipsis,
@@ -77,8 +78,9 @@ export const IedArrayOutput = ({
 					self.findIndex(
 						(t) => t.nome === item.nome && t.fabricante === item.fabricante,
 					),
-		  )
+			)
 		: [...ied.ied, ...ied.ied_terceiros];
+		
 
 	// Separação dos IEDs
 	const iedsTreetech = allIeds
@@ -102,6 +104,16 @@ export const IedArrayOutput = ({
 		prevDefaultIedsRef.current = stringifiedDefaultIeds;
 	}, [defaultIeds, append, remove, fields]);
 
+	function copyIed(index: number) {
+		append({
+			name: control._formValues.saidas[nestIndex].ieds[index].name,
+			manufacturer:
+				control._formValues.saidas[nestIndex].ieds[index].manufacturer,
+			address: control._formValues.saidas[nestIndex].ieds.length + 1,
+			modules: control._formValues.saidas[nestIndex].ieds[index].modules,
+			optional: control._formValues.saidas[nestIndex].ieds[index].optional,
+		});
+	}
 	return (
 		<div className="p-1 min-h-[255px]">
 			<h3 className="font-semibold  mb-2">IEDs</h3>
@@ -165,16 +177,24 @@ export const IedArrayOutput = ({
 											</SelectGroup>
 										</SelectContent>
 									</Select>
-									<div>
-										<Button
-											type="button"
-											variant="outline"
-											className="bg-linear-to-r from-zinc-200 to-red-200 hover:bg-red-200 "
-											onClick={() => remove(k)}
-										>
-											<X className="size-4 text-red-700" />
-										</Button>
-									</div>
+									<Button
+										onClick={() => {
+											copyIed(k);
+										}}
+										type="button"
+										variant="outline"
+										className="bg-radial from-zinc-200 to-zinc-300"
+									>
+										<Copy />
+									</Button>
+									<Button
+										type="button"
+										variant="outline"
+										className="bg-linear-to-r from-zinc-200 to-red-200 hover:bg-red-200 "
+										onClick={() => remove(k)}
+									>
+										<X className="size-4 text-red-700" />
+									</Button>
 								</div>
 							)}
 						/>
