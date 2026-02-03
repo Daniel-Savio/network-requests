@@ -274,7 +274,7 @@ export const MyDocument = ({
 							<Text style={[styles.tableCell, styles.highligthBlue]}>
 								{thirdPartIeds.length > 0
 									? thirdPartIeds.map((ied, index) => {
-											return ied.nome + " - " + ied.fabricante;
+											return " " +ied.nome;
 										})
 									: "Nenhum"}
 							</Text>
