@@ -29,6 +29,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useRequestStore } from "./store";
 import type { IED } from "./types";
 import { useEffect, useRef } from "react";
 
@@ -36,14 +37,10 @@ export const IedArrayOutput = ({
 	nestIndex,
 	control,
 	setValue,
-	availableIeds,
-	defaultIeds,
 }: {
 	nestIndex: number;
 	control: any;
 	setValue: any;
-	availableIeds?: { nome: string; fabricante: string }[];
-	defaultIeds?: IED[];
 }) => {
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -60,6 +57,19 @@ export const IedArrayOutput = ({
 		},
 	};
 
+	const storedFormData = useRequestStore((state) => state);
+	const defaultIeds: IED[] | undefined = storedFormData.entradas?.flatMap(
+		(entry) => entry.ieds,
+	);
+
+	//Flatmap para pegar todos os IEDs de todas as entradas
+	const availableIeds = storedFormData.entradas
+		?.flatMap((entry) => entry.ieds)
+		.map((ied) => ({
+			nome: ied.name,
+			fabricante: ied.manufacturer,
+		}));
+
 	const allIeds = availableIeds
 		? availableIeds.filter(
 				(item, index, self) =>
@@ -67,8 +77,10 @@ export const IedArrayOutput = ({
 					self.findIndex(
 						(t) => t.nome === item.nome && t.fabricante === item.fabricante,
 					),
-			)
+		  )
 		: [...ied.ied, ...ied.ied_terceiros];
+
+	// Separação dos IEDs
 	const iedsTreetech = allIeds
 		.filter((ied) => ied.fabricante === "Treetech")
 		.sort((a, b) => a.nome.localeCompare(b.nome));

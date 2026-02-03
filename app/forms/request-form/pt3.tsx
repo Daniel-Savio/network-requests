@@ -72,17 +72,6 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 	const storeData = useRequestStore((state) => state.setData);
 	const inputRef = useRef<HTMLDivElement[] | null>([]);
 
-	//Separando os IEDs que foram escolhidos nas entradas
-	const defaultIeds: IED[] | undefined = storedFormData.entradas?.flatMap(
-		(entry) => entry.ieds,
-	);
-	const availableIeds = storedFormData.entradas
-		?.flatMap((entry) => entry.ieds)
-		.map((ied) => ({
-			nome: ied.name,
-			fabricante: ied.manufacturer,
-		}));
-
 	// Opçoes de saída disponíveis baseadas nas escolhas das entradas
 	const uniqueTypes: string[] = storedFormData
 		? [...new Set(storedFormData.entradas?.map((entry) => entry.type))]
@@ -637,8 +626,6 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 										nestIndex={index}
 										control={control}
 										setValue={form.setValue}
-										defaultIeds={defaultIeds}
-										availableIeds={availableIeds}
 									></IedArrayOutput>
 								</TabsContent>
 
