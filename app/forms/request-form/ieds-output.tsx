@@ -90,19 +90,6 @@ export const IedArrayOutput = ({
 		.filter((ied) => ied.fabricante !== "Treetech")
 		.sort((a, b) => a.nome.localeCompare(b.nome));
 
-	const prevDefaultIedsRef = useRef<string>("");
-
-	useEffect(() => {
-		const stringifiedDefaultIeds = JSON.stringify(defaultIeds);
-		if (prevDefaultIedsRef.current !== stringifiedDefaultIeds) {
-			const indicesToRemove = fields.map((_, index) => index);
-			remove(indicesToRemove);
-			if (defaultIeds) {
-				append(defaultIeds);
-			}
-		}
-		prevDefaultIedsRef.current = stringifiedDefaultIeds;
-	}, [defaultIeds, append, remove, fields]);
 
 	function copyIed(index: number) {
 		append({

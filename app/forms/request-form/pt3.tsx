@@ -90,7 +90,7 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 		defaultValues: {
 			saidas: storedFormData.saidas || [
 				{
-					protocolo: "Modbus",
+					protocolo: "",
 					type: "TCP/IP",
 					ip: "192.168.10.87",
 					port: "502",
@@ -169,7 +169,7 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 
 				{fields.map((currentField, index) => (
 					<AnimatePresence key={index}>
-						<Tabs defaultValue="def">
+						<Tabs defaultValue="ieds">
 							<motion.div
 								animate={{ x: 0, opacity: 1 }}
 								initial={{ x: 30, opacity: 0 }}
