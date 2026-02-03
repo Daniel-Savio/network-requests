@@ -267,8 +267,8 @@ export const MyDocument = ({
 						<View style={styles.tableCol}>
 							<Text style={styles.tableCell}>{inputProtocols.join(", ")}</Text>
 						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>{outputProtocols.join(", ")}</Text>
+						<View style={[styles.tableCol]}>
+							<Text style={[styles.tableCell, styles.highligthYellow]}>{outputProtocols.join(", ")}</Text>
 						</View>
 						<View style={styles.tableCol}>
 							<Text style={[styles.tableCell, styles.highligthBlue]}>
@@ -313,7 +313,7 @@ export const MyDocument = ({
 									<Text style={styles.label}>Tipo:</Text>
 									<Text style={styles.value}>{entrada.type}</Text>
 								</View>
-								<View style={styles.row}>
+								<View style={[styles.row, styles.highligthYellow]}>
 									<Text style={styles.label}>Protocolo:</Text>
 									<Text style={styles.value}>{entrada.protocolo}</Text>
 								</View>
@@ -441,7 +441,7 @@ export const MyDocument = ({
 									<Text style={styles.label}>Tipo:</Text>
 									<Text style={styles.value}>{saida.type}</Text>
 								</View>
-								<View style={styles.row}>
+								<View style={[styles.row, styles.highligthYellow]}>
 									<Text style={styles.label}>Protocolo:</Text>
 									<Text style={styles.value}>{saida.protocolo}</Text>
 								</View>
