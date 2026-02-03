@@ -60,7 +60,7 @@ export default function Pt1({ isHidden, next, prev }: Props) {
     data.departament = info.requester.find(item => item.name === requester)?.departament || ""
     setFormData(data)
     storeData(data)
-    console.log(useRequestStore.getState())
+ 
 
     if (next) {
       const virtualButton = document.createElement('button');

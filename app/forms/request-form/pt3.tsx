@@ -10,12 +10,13 @@ import {
 	ChevronRight,
 	EthernetPort,
 	Plus,
+	TriangleAlert,
 	X,
 } from "lucide-react";
 
 import { AnimatePresence, motion } from "motion/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
 	InputGroup,
 	InputGroupAddon,
@@ -136,13 +137,21 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 
 				for (const [iedIndex, ied] of saida.ieds.entries()) {
 					if (!ied.name || !ied.manufacturer) {
-						throw new Error(`IED ${iedIndex + 1} não foi selecionado  na ${index + 1}° saída.`);
+						throw new Error(
+							`IED ${iedIndex + 1} não foi selecionado  na ${index + 1}° saída.`,
+						);
 					} else if (ied.name === "BM" && ied.modules === "") {
-						throw new Error(`IED ${iedIndex + 1} - ${ied.name} não possui módulos selecionados na ${index + 1}° saída.`);
+						throw new Error(
+							`IED ${iedIndex + 1} - ${ied.name} não possui módulos selecionados na ${index + 1}° saída.`,
+						);
 					} else if (ied.name === "Entradas Digitais" && ied.modules === "") {
-						throw new Error(`IED ${iedIndex + 1} - ${ied.name} não possui nenhum borne selecionado na ${index + 1}° saída.`);
+						throw new Error(
+							`IED ${iedIndex + 1} - ${ied.name} não possui nenhum borne selecionado na ${index + 1}° saída.`,
+						);
 					} else if (ied.name === "COMM4" && ied.modules === "") {
-						throw new Error(`IED ${iedIndex + 1} - ${ied.name} não possui nenhum número de SPS atrelado na ${index + 1}° saída.`);
+						throw new Error(
+							`IED ${iedIndex + 1} - ${ied.name} não possui nenhum número de SPS atrelado na ${index + 1}° saída.`,
+						);
 					}
 				}
 			}
@@ -166,7 +175,6 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 
 	return (
 		<div className="p-2 gap-2" style={isHidden ? { display: "none" } : {}}>
-
 			<form onSubmit={form.handleSubmit(saveFormData)}>
 				<h1 className="text-lg font-bold">Saídas</h1>
 
