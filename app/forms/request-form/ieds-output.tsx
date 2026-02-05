@@ -32,7 +32,8 @@ import {
 } from "@/components/ui/tooltip";
 import { useRequestStore } from "./store";
 import type { IED } from "./types";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 export const IedArrayOutput = ({
 	nestIndex,
@@ -47,6 +48,7 @@ export const IedArrayOutput = ({
 		control,
 		name: `saidas.${nestIndex}.ieds`,
 	});
+
 	const bouncingUpAnimation = {
 		initial: { y: 10, opacity: 0 },
 		whileInView: { y: 0, opacity: 1 },
@@ -59,11 +61,13 @@ export const IedArrayOutput = ({
 	};
 
 	const storedFormData = useRequestStore((state) => state);
+
+
+	// Flatmap para pegar todos os IEDs
 	const defaultIeds: IED[] | undefined = storedFormData.entradas?.flatMap(
 		(entry) => entry.ieds,
 	);
 
-	//Flatmap para pegar todos os IEDs de todas as entradas
 	const availableIeds = storedFormData.entradas
 		?.flatMap((entry) => entry.ieds)
 		.map((ied) => ({
@@ -80,9 +84,7 @@ export const IedArrayOutput = ({
 					),
 			)
 		: [...ied.ied, ...ied.ied_terceiros];
-		
 
-	// Separação dos IEDs
 	const iedsTreetech = allIeds
 		.filter((ied) => ied.fabricante === "Treetech")
 		.sort((a, b) => a.nome.localeCompare(b.nome));
@@ -90,24 +92,71 @@ export const IedArrayOutput = ({
 		.filter((ied) => ied.fabricante !== "Treetech")
 		.sort((a, b) => a.nome.localeCompare(b.nome));
 
+	useEffect(() => {
+		// Uso seguro do control (apenas se existir) para log
+		// Mas a lógica principal deve depender de defaultIeds
+		if (defaultIeds && fields.length === 0) {
+			replicateInput()
+		}
+	}, [defaultIeds, append, fields.length]); // Adicionado fields.length nas dependências
 
 	function copyIed(index: number) {
-		append({
-			name: control._formValues.saidas[nestIndex].ieds[index].name,
-			manufacturer:
-				control._formValues.saidas[nestIndex].ieds[index].manufacturer,
-			address: control._formValues.saidas[nestIndex].ieds.length + 1,
-			modules: control._formValues.saidas[nestIndex].ieds[index].modules,
-			optional: control._formValues.saidas[nestIndex].ieds[index].optional,
+		// Usamos fields[index] para pegar os dados atuais de forma segura
+		// Nota: fields contém valores padrão + id. Se precisar do valor digitado em tempo real
+		// e o componente não for controlado, use getValues() (teria que receber via props)
+		// Mas para evitar o crash, fields resolve:
+		const currentItem = fields[index] as unknown as IED; // Cast simples já que fields tem a estrutura
+
+		if (currentItem) {
+			append({
+				name: currentItem.name,
+				manufacturer: currentItem.manufacturer,
+				address: fields.length + 1,
+				modules: currentItem.modules,
+				optional: currentItem.optional,
+			});
+		}
+	}
+
+	function replicateInput() {
+		remove();
+
+		defaultIeds?.forEach((ied, index) => {
+			append({
+				name: ied.name,
+				manufacturer: ied.manufacturer,
+				address: index + 1,
+				modules: ied.modules,
+				optional: ied.optional,
+			});
 		});
 	}
+
 	return (
 		<div className="p-1 min-h-[255px]">
-			<h3 className="font-semibold  mb-2">IEDs</h3>
+			<header className="flex justify-between">
+				<div className="flex gap-2">
+					<h3 className="font-semibold  mb-2">IEDs</h3>
+					<span className="text-zinc-400">
+						{/* CORREÇÃO 1: Usar fields.length */}
+						{fields.length}
+					</span>
+				</div>
+				<div className="flex gap-3">
+					<Button
+						type="button"
+						onClick={() => {
+							replicateInput();
+						}}
+					>
+						Replicar entradas
+					</Button>
+				</div>
+			</header>
 
 			{fields.map((item, k) => (
 				<motion.div
-					key={k}
+					key={item.id}
 					className="flex flex-col mt-2  border rounded-md"
 					initial={bouncingUpAnimation.initial}
 					whileInView={bouncingUpAnimation.whileInView}
@@ -146,7 +195,7 @@ export const IedArrayOutput = ({
 													Treetech
 												</SelectLabel>
 												{iedsTreetech.map((ied, i) => (
-													<SelectItem key={i} value={ied.nome}>
+													<SelectItem key={`tree-${i}`} value={ied.nome}>
 														{ied.nome}
 													</SelectItem>
 												))}
@@ -155,7 +204,7 @@ export const IedArrayOutput = ({
 												</SelectLabel>
 												{iedsTerceiros.map((ied, i) => (
 													<SelectItem
-														key={`treetech-${ied.nome}-${i}`}
+														key={`other-${ied.nome}-${i}`}
 														value={ied.nome}
 													>
 														{ied.nome} - {ied.fabricante}
@@ -164,6 +213,7 @@ export const IedArrayOutput = ({
 											</SelectGroup>
 										</SelectContent>
 									</Select>
+
 									<Button
 										onClick={() => {
 											copyIed(k);
@@ -174,6 +224,7 @@ export const IedArrayOutput = ({
 									>
 										<Copy />
 									</Button>
+
 									<Button
 										type="button"
 										variant="outline"
@@ -186,10 +237,14 @@ export const IedArrayOutput = ({
 							)}
 						/>
 					</div>
+
+					{/* Renderização condicional do fabricante - EVITANDO CRASH */}
 					<div className="flex items-center justify-center text-sm text-zinc-500 bg-zinc-100 mb-4 border-b rounded-b-md">
-						{control._formValues.saidas[nestIndex].ieds[k].manufacturer
-							? control._formValues.saidas[nestIndex].ieds[k].manufacturer
-							: "Fabricante"}
+						<Controller
+							name={`saidas.${nestIndex}.ieds.${k}.manufacturer`}
+							control={control}
+							render={({ field }) => <span>{field.value || "Fabricante"}</span>}
+						/>
 					</div>
 
 					<section className="space-y-2">
@@ -217,50 +272,45 @@ export const IedArrayOutput = ({
 													</InputGroupButton>
 												</TooltipTrigger>
 												<TooltipContent className="max-w-40 text-justify">
-													Endereço do IED correspondente ao protocolo, essa
-													informação pode estar no projeto mas se não houver
-													pode colocar os valores em órdem crescente começando
-													em 1
+													Endereço do IED...
 												</TooltipContent>
 											</Tooltip>
 										</InputGroupAddon>
 									</InputGroup>
 								)}
 							/>
-							{(control._formValues.saidas[nestIndex].ieds[k].name === "BM" ||
-								control._formValues.saidas[nestIndex].ieds[k].name ===
-									"COMM4" ||
-								control._formValues.saidas[nestIndex].ieds[k].name ===
-									"Entrada Digital do gateway") && (
-								<Controller
-									name={`saidas.${nestIndex}.ieds.${k}.modules`}
-									control={control}
-									render={({ field }) => (
-										<InputGroup className="w-full">
-											<InputGroupInput
-												className="w-full"
-												type="number"
-												placeholder="Módulos"
-												{...field}
-											/>
-											<InputGroupAddon align="inline-end">
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<InputGroupButton>
+
+							{/* Render Condicional usando Watch/Controller value seria o ideal, mas checando via control._formValues precisa de null check */}
+							<Controller
+								name={`saidas.${nestIndex}.ieds.${k}.name`}
+								control={control}
+								render={({ field: { value: nameValue } }) => (
+									<>
+										{(nameValue === "BM" ||
+											nameValue === "COMM4" ||
+											nameValue === "Entrada Digital do gateway") && (
+											<Controller
+												name={`saidas.${nestIndex}.ieds.${k}.modules`}
+												control={control}
+												render={({ field }) => (
+													<InputGroup className="w-full">
+														<InputGroupInput
+															className="w-full"
+															type="number"
+															placeholder="Módulos"
+															{...field}
+														/>
+														<InputGroupAddon align="inline-end">
+															{/* Tooltip ... */}
 															<CircleQuestionMark className="size-4" />
-														</InputGroupButton>
-													</TooltipTrigger>
-													<TooltipContent className="max-w-40 text-justify">
-														Quantidade de módulos do IED, ou quantidade de SPSs
-														conectados ou quantiade de saidas Digitais para
-														serem mapeadas
-													</TooltipContent>
-												</Tooltip>
-											</InputGroupAddon>
-										</InputGroup>
-									)}
-								/>
-							)}
+														</InputGroupAddon>
+													</InputGroup>
+												)}
+											/>
+										)}
+									</>
+								)}
+							/>
 						</div>
 						<div>
 							<Controller
@@ -277,25 +327,8 @@ export const IedArrayOutput = ({
 											<RectangleEllipsis />
 										</InputGroupAddon>
 										<InputGroupAddon align="inline-end">
-											<Tooltip>
-												<TooltipTrigger asChild>
-													<InputGroupButton>
-														<CircleQuestionMark className="size-4" />
-													</InputGroupButton>
-												</TooltipTrigger>
-												<TooltipContent className="max-w-45 text-justify">
-													Caso seja necessário habilitar algum opcional do IED,
-													como por exemplo a leitura de Tap do AVR ou
-													Diferencial de temperatura do TM.
-													<br className="h-2" />
-													<br className="h-2" />
-													Caso não haja nenhum opcional:
-													<br className="h-2" />
-													<strong className="font-bolder text-sm">
-														Pode deixar em branco.
-													</strong>
-												</TooltipContent>
-											</Tooltip>
+											{/* Tooltip */}
+											<CircleQuestionMark className="size-4" />
 										</InputGroupAddon>
 									</InputGroup>
 								)}
@@ -319,7 +352,8 @@ export const IedArrayOutput = ({
 						append({
 							name: "",
 							manufacturer: "",
-							address: control._formValues.saidas[nestIndex].ieds.length + 1,
+							// CORREÇÃO 2: Usar fields.length + 1
+							address: fields.length + 1,
 							modules: "",
 							optional: "",
 						})

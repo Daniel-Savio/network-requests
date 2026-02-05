@@ -15,7 +15,6 @@ export default function Request() {
     const [formStep, setFormStep] = useState(0)
     const storedFormData = useRequestStore((state)=>state)
 
-    const formData = storedFormData.saidas?.length ? storedFormData : ""
 
     function goToFinalStep(){
         setFormStep(3)
@@ -24,8 +23,8 @@ export default function Request() {
     return (
 
         <div className="max-h-screen">
-            <ScrollArea >
-                <Card >
+            <ScrollArea className="">
+                <Card className="m-auto md:max-w-250">
                     <CardHeader>
                         <h1 className="text-lg font-bold">Requisição</h1>
                         <div className="flex justify-between">

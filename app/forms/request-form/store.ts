@@ -1,4 +1,4 @@
-import type { RequestForm } from "./types"
+import type { IED, RequestForm } from "./types"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 
@@ -21,6 +21,5 @@ export const useRequestStore = create<RequestFormState>()(
 export const useInputTypeStore = create(
     (set) => ({
         setData: (data: string[]) => set(data)
-
     })
 )

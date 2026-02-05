@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { requestFormSchema } from "./types";
-import { z } from "zod";
-import { useRequestStore } from "./store";
+import { requestFormSchema, type IED } from "./types";
+import { set, z } from "zod";
+import {  useRequestStore } from "./store";
 import { toast } from "sonner";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
@@ -32,7 +32,7 @@ import InputError from "@/components/error";
 import { AnimatePresence, motion } from "motion/react";
 import { IedArrayInput } from "./ieds-input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useRef } from "react";
+import { use, useRef } from "react";
 
 interface Props {
 	isHidden: boolean;
@@ -62,6 +62,10 @@ export default function Pt2({ isHidden, next, prev }: Props) {
 	const inputRef = useRef<HTMLDivElement[] | null>([]);
 	const storeData = useRequestStore((state) => state.setData);
 	const storedEntradas = useRequestStore((state) => state.entradas);
+
+	let allIeds: IED[] = [];
+	let prevAllIeds: IED[] =
+		storedEntradas?.flatMap((entrada) => entrada.ieds) || [];
 
 	const {
 		formState: { errors },
@@ -108,19 +112,28 @@ export default function Pt2({ isHidden, next, prev }: Props) {
 
 				for (const [iedIndex, ied] of entrada.ieds.entries()) {
 					if (!ied.name || !ied.manufacturer) {
-						throw new Error(`IED ${iedIndex + 1} não foi selecionado  na ${index + 1}° entrada.`);
+						throw new Error(
+							`IED ${iedIndex + 1} não foi selecionado  na ${index + 1}° entrada.`,
+						);
 					} else if (ied.name === "BM" && ied.modules === "") {
-						throw new Error(`IED ${iedIndex + 1} - ${ied.name} não possui módulos selecionados na ${index + 1}° entrada.`);
+						throw new Error(
+							`IED ${iedIndex + 1} - ${ied.name} não possui módulos selecionados na ${index + 1}° entrada.`,
+						);
 					} else if (ied.name === "Entradas Digitais" && ied.modules === "") {
-						throw new Error(`IED ${iedIndex + 1} - ${ied.name} não possui nenhum borne selecionado na ${index + 1}° entrada.`);
+						throw new Error(
+							`IED ${iedIndex + 1} - ${ied.name} não possui nenhum borne selecionado na ${index + 1}° entrada.`,
+						);
 					} else if (ied.name === "COMM4" && ied.modules === "") {
-						throw new Error(`IED ${iedIndex + 1} - ${ied.name} não possui nenhum número de SPS atrelado na ${index + 1}° entrada.`);
+						throw new Error(
+							`IED ${iedIndex + 1} - ${ied.name} não possui nenhum número de SPS atrelado na ${index + 1}° entrada.`,
+						);
 					}
 				}
 			}
 
 			if (isValid) {
 				storeData(data);
+
 				if (next) {
 					const virtualButton = document.createElement("button");
 					virtualButton.onclick = next;

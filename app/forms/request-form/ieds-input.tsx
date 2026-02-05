@@ -91,6 +91,8 @@ export const IedArrayInput = ({
 				optional: control._formValues.entradas[nestIndex].ieds[index].optional,
             })
         }
+
+		
 	return (
 		<div className="p-1 min-h-[255px]">
 			<h3 className="font-semibold  mb-2">IEDs</h3>
