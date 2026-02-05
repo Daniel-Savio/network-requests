@@ -532,10 +532,10 @@ export const MyDocument = ({
 													{ied.address}
 												</Text>
 												<Text style={[styles.iedTableCell, { width: "20%" }]}>
-													{ied.modules}
+													Idem à Entrada
 												</Text>
 												<Text style={[styles.iedTableCell, { width: "15%" }]}>
-													{ied.optional}
+													Idem à Entrada
 												</Text>
 											</View>
 										))}

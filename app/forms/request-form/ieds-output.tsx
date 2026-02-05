@@ -281,61 +281,8 @@ export const IedArrayOutput = ({
 								)}
 							/>
 
-							{/* Render Condicional usando Watch/Controller value seria o ideal, mas checando via control._formValues precisa de null check */}
-							<Controller
-								name={`saidas.${nestIndex}.ieds.${k}.name`}
-								control={control}
-								render={({ field: { value: nameValue } }) => (
-									<>
-										{(nameValue === "BM" ||
-											nameValue === "COMM4" ||
-											nameValue === "Entrada Digital do gateway") && (
-											<Controller
-												name={`saidas.${nestIndex}.ieds.${k}.modules`}
-												control={control}
-												render={({ field }) => (
-													<InputGroup className="w-full">
-														<InputGroupInput
-															className="w-full"
-															type="number"
-															disabled
-															placeholder="Módulos"
-															{...field}
-														/>
-														<InputGroupAddon align="inline-end">
-															{/* Tooltip ... */}
-															<CircleQuestionMark className="size-4" />
-														</InputGroupAddon>
-													</InputGroup>
-												)}
-											/>
-										)}
-									</>
-								)}
-							/>
 						</div>
-						<div>
-							<Controller
-								name={`saidas.${nestIndex}.ieds.${k}.optional`}
-								control={control}
-								render={({ field }) => (
-									<InputGroup>
-										<InputGroupInput
-											placeholder="Opcionais"
-											{...field}
-											value={field.value || ""}
-										/>
-										<InputGroupAddon align="inline-start">
-											<RectangleEllipsis />
-										</InputGroupAddon>
-										<InputGroupAddon align="inline-end">
-											{/* Tooltip */}
-											<CircleQuestionMark className="size-4" />
-										</InputGroupAddon>
-									</InputGroup>
-								)}
-							/>
-						</div>
+
 					</section>
 				</motion.div>
 			))}
