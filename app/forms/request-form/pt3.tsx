@@ -114,6 +114,27 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 			if (!data.saidas || data.saidas.length === 0) {
 				throw new Error("Adicione ao menos uma saída.");
 			}
+
+			const inputIedNames = new Set(
+				storedFormData.entradas?.flatMap((e) => e.ieds?.map((i) => i.name)) || [],
+			);
+			const outputIedNames = new Set(
+				data.saidas.flatMap((s) => s.ieds?.map((i) => i.name)) || [],
+			);
+
+			for (const name of inputIedNames) {
+				if (name && !outputIedNames.has(name)) {
+					throw new Error(`O IED "${name}" presente nas entradas não foi configurado em nenhuma saída.`);
+				}
+			}
+
+			const totalInputIeds = storedFormData.entradas?.reduce((acc, curr) => acc + (curr.ieds?.length || 0), 0) || 0;
+			const totalOutputIeds = data.saidas.reduce((acc, curr) => acc + (curr.ieds?.length || 0), 0);
+
+			if (totalOutputIeds < totalInputIeds) {
+				throw new Error(`A quantidade total de IEDs nas saídas (${totalOutputIeds}) não pode ser maior que a quantidade total nas entradas (${totalInputIeds}).`);
+			}
+			
 			for (const [index, saida] of data.saidas.entries()) {
 				if (!isValid) break;
 				if (!saida.ieds || saida.ieds.length === 0) {
@@ -169,7 +190,7 @@ export default function Pt3({ isHidden, next, prev }: Props) {
 
 				{fields.map((currentField, index) => (
 					<AnimatePresence key={index}>
-						<Tabs defaultValue="ieds">
+						<Tabs defaultValue="def">
 							<motion.div
 								animate={{ x: 0, opacity: 1 }}
 								initial={{ x: 30, opacity: 0 }}

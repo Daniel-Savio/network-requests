@@ -18,7 +18,8 @@ import {
 import { Button } from "@/components/ui/button";
 import {
 	CircleQuestionMark,
-	Copy,
+	Clipboard,
+	FileInput,
 	ListOrdered,
 	Plus,
 	RectangleEllipsis,
@@ -33,7 +34,6 @@ import {
 import { useRequestStore } from "./store";
 import type { IED } from "./types";
 import { useEffect } from "react";
-import { toast } from "sonner";
 
 export const IedArrayOutput = ({
 	nestIndex,
@@ -149,6 +149,7 @@ export const IedArrayOutput = ({
 							replicateInput();
 						}}
 					>
+						<FileInput className="size-4" />
 						Replicar entradas
 					</Button>
 				</div>
@@ -220,9 +221,9 @@ export const IedArrayOutput = ({
 										}}
 										type="button"
 										variant="outline"
-										className="bg-radial from-zinc-200 to-zinc-300"
+										className="bg-radial from-zinc-200 to-blue-300"
 									>
-										<Copy />
+										<Clipboard />
 									</Button>
 
 									<Button
@@ -297,6 +298,7 @@ export const IedArrayOutput = ({
 														<InputGroupInput
 															className="w-full"
 															type="number"
+															disabled
 															placeholder="Módulos"
 															{...field}
 														/>
