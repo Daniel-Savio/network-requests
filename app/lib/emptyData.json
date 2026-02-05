@@ -1,0 +1,57 @@
+{
+  "requester": "",
+  "email": "",
+  "departament": "",
+  "isEqual": false,
+  "client": "",
+  "project": "",
+  "invoiceNumber": "",
+  "clientNumber": "",
+  "gateway": "",
+  "sigmaConnection": "",
+  "comments": "",
+  "entradas": [
+    {
+      "protocolo": "",
+      "type": "",
+      "ip": "",
+      "port": "",
+      "config": "",
+      "baudRate": "",
+      "dataBits": "",
+      "parity": "",
+      "stopBits": "",
+      "ieds": [
+        {
+          "name": "",
+          "manufacturer": "",
+          "address": "",
+          "modules": "",
+          "optional": ""
+        }
+      ]
+    }
+  ],
+  "saidas": [
+    {
+      "protocolo": "",
+      "type": "",
+      "ip": "",
+      "port": "",
+      "config": "",
+      "baudRate": "",
+      "dataBits": "",
+      "parity": "",
+      "stopBits": "",
+      "ieds": [
+        {
+          "name": "",
+          "manufacturer": "",
+          "address": "",
+          "modules": "",
+          "optional": ""
+        }
+      ]
+    }
+  ]
+}

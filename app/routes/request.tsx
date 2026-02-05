@@ -6,11 +6,14 @@ import P1 from "@/forms/request-form/pt1"
 import P2 from "@/forms/request-form/pt2"
 import P3 from "@/forms/request-form/pt3"
 import P4 from "@/forms/request-form/pt4"
+import { useRequestStore } from "@/forms/request-form/store"
 import { useState } from "react"
+import emptyData from "@/lib/emptyData.json"
 
 
 export default function Request() {
     const [formStep, setFormStep] = useState(0)
+    const clearData = useRequestStore((state) => state.setData)
 
 
 
@@ -23,8 +26,19 @@ export default function Request() {
                         <h1 className="text-lg font-bold">Requisição</h1>
                         <div className="flex justify-between">
                             <h1>Progresso do formulário</h1>
-                           
-                            
+                            <Button 
+                                type="button"
+                                variant="destructive" 
+                                size="sm" 
+                                className=""
+                                onClick={() => {
+                                    clearData(emptyData);
+                                    window.location.reload();
+                                   
+                                }}
+                            >
+                                Limpar formulário
+                            </Button>
                         </div>
                         <Progress value={(formStep + 1) * 25}/>
                     </CardHeader>
