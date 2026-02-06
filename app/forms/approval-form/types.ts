@@ -11,7 +11,7 @@ export const approvalScheema = z.object({
     client: z.string().min(3, 'Insira um nome válido'),
     manufacturer: z.string().min(3, 'Insira o nome do fabricante do IED'),
     url: z.url('Insira uma URL válida'),
-    name: z.string().min(3, 'Insira o nome do IED'),
+    name: z.string().min(2, 'Insira o nome do IED'),
     type: z.string().min(3, "Coloque o tipo do equipamento. Ex.: Medidor de gás, secador, monitor de bucha, etc."),
     documentType: z.string().min(3, 'Insira o tipo de documento anexado. Ex.: Manuel, Mapa de protocolo, etc'),
     protocols: z.string().nonempty('Insira ao menos um protocolo'),

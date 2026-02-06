@@ -9,6 +9,7 @@ import {
 } from "@react-pdf/renderer";
 import logo from "../../../public/logo.png";
 import type { ApprovalFormType } from "./types";
+import { color } from "motion/react";
 
 Font.register({
 	family: "Univers",
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
 	},
 });
 
-export const MyDocument = (data: ApprovalFormType) => {
+export const PDFcover = ({ data }: { data: ApprovalFormType }) => {
 
 
 	return (
@@ -196,43 +197,45 @@ export const MyDocument = (data: ApprovalFormType) => {
 						<Text style={styles.label}>Cliente:</Text>
 						<Text style={styles.value}>{data.client}</Text>
 					</View>
-					<View style={styles.row}>
+					<View style={[styles.row, styles.highligth]}>
 						<Text style={styles.label}>Protocolos:</Text>
 						<Text style={styles.value}>{data.protocols}</Text>
 					</View>
 					<View style={styles.row}>
 						<Text style={styles.label}>Site de acesso:</Text>
-						<Text style={styles.value}>{data.url}</Text>
+						<Text style={[styles.value, {color: "#1243e2"}]}>{data.url}</Text>
 					</View>
 					<View style={{ marginTop: 10 }} />
 				</View>
+					<View style={styles.section}>
 
-					<View style={styles.tableRow}>
-						<View style={styles.tableColHeader}>
-							<Text style={styles.tableCellHeader}>Fabricante</Text>
+						<View style={styles.tableRow}>
+							<View style={styles.tableColHeader}>
+								<Text style={styles.tableCellHeader}>Fabricante</Text>
+							</View>
+							<View style={styles.tableColHeader}>
+								<Text style={styles.tableCellHeader}>Nome</Text>
+							</View>
+							<View style={styles.tableColHeader}>
+								<Text style={styles.tableCellHeader}>Tipo</Text>
+							</View>
+							<View style={styles.tableColHeader}>
+								<Text style={styles.tableCellHeader}>Documento anexado</Text>
+							</View>
 						</View>
-						<View style={styles.tableColHeader}>
-							<Text style={styles.tableCellHeader}>Nome do equipamento</Text>
-						</View>
-						<View style={styles.tableColHeader}>
-							<Text style={styles.tableCellHeader}>Tipo do equipamento</Text>
-						</View>
-						<View style={styles.tableColHeader}>
-							<Text style={styles.tableCellHeader}>Documento anexado</Text>
-						</View>
-					</View>
-					<View style={styles.tableRow}>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>{data.manufacturer}</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>{data.name}</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>{data.type}</Text>
-						</View>
-						<View style={styles.tableCol}>
-							<Text style={styles.tableCell}>{data.documentType}</Text>
+						<View style={styles.tableRow}>
+							<View style={styles.tableCol}>
+								<Text style={styles.tableCell}>{data.manufacturer}</Text>
+							</View>
+							<View style={styles.tableCol}>
+								<Text style={styles.tableCell}>{data.name}</Text>
+							</View>
+							<View style={styles.tableCol}>
+								<Text style={styles.tableCell}>{data.type}</Text>
+							</View>
+							<View style={styles.tableCol}>
+								<Text style={styles.tableCell}>{data.documentType}</Text>
+							</View>
 						</View>
 					</View>
 
