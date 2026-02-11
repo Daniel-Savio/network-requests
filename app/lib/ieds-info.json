@@ -82,6 +82,10 @@
             "nome": "MasterTemp",
             "fabricante": "Electron"
         },
+                {
+            "nome": "Relé de Membrana",
+            "fabricante": "Electron"
+        },
         {
             "nome": "Calisto",
             "fabricante": "Doble"
