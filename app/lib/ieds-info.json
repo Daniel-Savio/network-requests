@@ -47,6 +47,10 @@
         {
             "nome": "MO",
             "fabricante": "Treetech"
+        }, 
+        {
+            "nome": "MBR_V2",
+            "fabricante": "Treetech"
         },
         {
             "nome": "SPS",
