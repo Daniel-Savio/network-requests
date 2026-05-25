@@ -6,6 +6,11 @@
             "departament": "Comercial"
         },
         {
+            "name": "Daniel Sávio",
+            "email": "daniel.savio@treetech.com.br",
+            "departament": "SAM"
+        },
+        {
             "name": "Rodrigo Silva",
             "email": "rodrigo.silva@treetech.com.br",
             "departament": "Comercial"
@@ -91,13 +96,13 @@
             "departament": "SAM"
         },
         {
-            "name": "Hugo Wemer",
+            "name": "Rodrigo Moreira",
             "email": "hugo.silva@treetech.com.br",
             "departament": "SAM"
         },
         {
-            "name": "Rodrigo Moreira",
-            "email": "rodrigo.moreira@treetech.com.br",
+            "name": "Thiago Furquim",
+            "email": "thiago.furquim@treetech.com.br",
             "departament": "SAM"
         }
     ],
