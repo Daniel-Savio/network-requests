@@ -7,7 +7,7 @@
         {
             "nome": "BM2 - Linha Black",
             "fabricante": "Treetech"
-        }
+        },
         {
             "nome": "COMM4",
             "fabricante": "Treetech"
@@ -53,7 +53,7 @@
             "fabricante": "Treetech"
         }, 
         {
-            "nome": "MBR_V2",
+            "nome": "MBR_V2 - Linha Black",
             "fabricante": "Treetech"
         },
         {
@@ -73,7 +73,7 @@
             "fabricante": "Treetech"
         },
         {
-            "nome": "AVR_V2",
+            "nome": "AVR_V2-Linha Black",
             "fabricante": "Treetech"
         },
         {
