@@ -1,10 +1,18 @@
-# Welcome to React Router!
+# Treetech - SDG Request
+Hosted at: [Vercel](https://network-requests.vercel.app/)
 
-A modern, production-ready template for building full-stack React applications using React Router.
+<img width="1338" height="722" alt="image" src="https://github.com/user-attachments/assets/bb56179b-2855-4795-b0c8-3c8de7ea8ed5" />
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+<img width="1060" height="787" alt="image" src="https://github.com/user-attachments/assets/bf4a123e-6f83-4a77-8133-d586030ed952" />
 
-## Features
+<img width="1064" height="784" alt="image" src="https://github.com/user-attachments/assets/4d29958d-3006-4415-8324-d0d54c763e03" />
+
+
+# Framework usado:
+React-Router
+
+
+## Technical Features
 
 - 🚀 Server-side rendering
 - ⚡️ Hot Module Replacement (HMR)
@@ -32,7 +40,7 @@ Start the development server with HMR:
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+This application `http://localhost:5173`.
 
 ## Building for Production
 
@@ -55,33 +63,8 @@ docker build -t my-app .
 docker run -p 3000:3000 my-app
 ```
 
-The containerized application can be deployed to any platform that supports Docker, including:
+# About the application
+This is a multipart form to be used to create a SDG application based on the information provided by the user.
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+  - It generates a PDF file with all the needed information stylyzed based on pratical information
+  - Also provide a JSON template to be imported and exported
